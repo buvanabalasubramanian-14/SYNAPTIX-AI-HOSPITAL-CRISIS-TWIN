@@ -1332,6 +1332,10 @@
 <!-- ==================== MOBILE OVERLAY MENU ==================== -->
 <div class="mobile-menu-overlay" id="mobile-menu-overlay" onclick="toggleMobileNav()">
     <nav class="mobile-menu-nav" onclick="event.stopPropagation()">
+        <div class="mobile-menu-head">
+            <span class="mobile-menu-brand">AI Hospital<br>Crisis Twin</span>
+            <button class="mobile-menu-close" onclick="toggleMobileNav()" aria-label="Close menu">✕</button>
+        </div>
         <button class="side-item active" data-view="dashboard" onclick="go('dashboard')">Hospital Crisis Overview</button>
         <button class="side-item" data-view="monitor" onclick="go('monitor')">Live Hospital Monitor</button>
         <button class="side-item" data-view="twin" onclick="go('twin')">Digital Twin</button>

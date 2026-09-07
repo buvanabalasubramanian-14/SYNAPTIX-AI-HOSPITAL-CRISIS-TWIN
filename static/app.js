@@ -84,11 +84,16 @@ function refreshOverview() {
 
 function toggleMobileNav() {
     const overlay = document.getElementById("mobile-menu-overlay");
+    const open = !overlay.classList.contains("show");
     overlay.classList.toggle("show");
+    document.body.classList.toggle("nav-locked", open);
 }
 function closeMobileNav() {
     const overlay = document.getElementById("mobile-menu-overlay");
-    if (overlay) overlay.classList.remove("show");
+    if (overlay) {
+        overlay.classList.remove("show");
+        document.body.classList.remove("nav-locked");
+    }
 }
 
 /* ==================== TOASTS ==================== */
