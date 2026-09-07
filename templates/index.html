@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Hospital Crisis Twin – AI-Powered Hospital Crisis Prediction &amp; Prevention System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="login-mode">
+
+<!-- ==================== LOGIN / AUTHORIZED ACCESS GATE ==================== -->
+<div class="login-screen" id="login-screen">
+    <div class="login-card">
+        <div class="login-head">
+            <div class="login-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h1 class="login-title">AI HOSPITAL CRISIS TWIN</h1>
+            <p class="login-sub">AI-Powered Hospital Crisis Prediction &amp; Prevention System</p>
+            <p class="login-brand">Developed by Team SynaptiX</p>
+            <p class="login-caption">Secure Hospital Operations Intelligence Platform</p>
+        </div>
+        <div class="login-badge">AUTHORIZED HOSPITAL PERSONNEL ONLY</div>
+        <form class="login-form" id="login-form" onsubmit="return false;">
+            <label class="login-label" for="login-empid">OFFICIAL HOSPITAL ID / EMAIL</label>
+            <input class="login-input" type="text" id="login-empid" placeholder="e.g. j.adeyemi@citygeneral.hospital" autocomplete="off" autofocus>
+            <label class="login-label" for="login-password">PASSWORD</label>
+            <input class="login-input" type="password" id="login-password" placeholder="Enter password" autocomplete="off">
+            <label class="login-label" for="login-role">USER ROLE</label>
+            <select class="login-input login-select" id="login-role">
+                <option value="" disabled selected>Select User Role...</option>
+                <option value="Hospital Administrator">Hospital Administrator</option>
+                <option value="Operations Manager">Operations Manager</option>
+                <option value="Emergency Department Manager">Emergency Department Manager</option>
+                <option value="ICU Manager">ICU Manager</option>
+                <option value="Authorized Hospital Staff">Authorized Hospital Staff</option>
+            </select>
+            <div class="login-error" id="login-error"></div>
+            <button class="btn btn-primary btn-lg btn-block" type="button" onclick="loginUser()">SIGN IN</button>
+        </form>
+        <p class="login-foot">Restricted access · Authorized personnel only · Session is monitored</p>
+    </div>
+</div>
+
+<!-- ==================== BACKGROUND DECOR ==================== -->
+<div class="bg-decoration">
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-grid"></div>
+</div>
+
+<!-- ==================== TOP BAR ==================== -->
+<header class="topbar">
+    <div class="topbar-left">
+        <div class="logo-wrap">
+            <div class="logo-mark">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/><path d="M12 6l6 6-6 6"/></svg>
+            </div>
+            <div class="logo-text">
+                <span class="logo-name">AI HOSPITAL<br>CRISIS TWIN</span>
+                <span class="logo-sub">AI CRISIS PREDICTION &amp; PREVENTION</span>
+            </div>
+        </div>
+    </div>
+    <div class="topbar-right">
+        <span class="topbar-mode" id="topbar-mode">SYSTEM STATUS: ACTIVE</span>
+        <div class="live-indicator">
+            <span class="live-dot"></span>
+            <span class="live-text">LIVE SYSTEM</span>
+        </div>
+        <div class="user-chip" id="user-chip" style="display:none">
+            <div class="user-chip-meta">
+                <span class="user-chip-label">SIGNED IN AS</span>
+                <span class="user-chip-role" id="user-role">Authorized User</span>
+                <span class="user-chip-id" id="user-id"></span>
+            </div>
+            <button class="user-logout" onclick="logoutUser()">LOG OUT</button>
+        </div>
+    </div>
+</header>
+
+<!-- ==================== SIDEBAR ==================== -->
+<aside class="sidebar" id="sidebar">
+    <nav class="sidebar-nav">
+        <div class="sidebar-label">AI HOSPITAL CRISIS TWIN</div>
+        <button class="side-item active" data-view="dashboard" onclick="go('dashboard')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+            <span>Hospital Crisis Overview</span>
+        </button>
+        <button class="side-item" data-view="monitor" onclick="go('monitor')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span>Live Hospital Monitor</span>
+        </button>
+        <button class="side-item" data-view="twin" onclick="go('twin')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <span>Digital Twin</span>
+        </button>
+        <button class="side-item" data-view="warning" onclick="go('warning')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span>Early Warning Center</span>
+        </button>
+        <button class="side-item" data-view="predict" onclick="go('predict')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span>AI Crisis Prediction</span>
+        </button>
+        <button class="side-item" data-view="simulator" onclick="go('simulator')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <span>Crisis Simulator</span>
+        </button>
+        <button class="side-item" data-view="response" onclick="go('response')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span>Preventive Action Plan</span>
+        </button>
+        <button class="side-item" data-view="resource" onclick="go('resource')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+            <span>Resource Optimizer</span>
+        </button>
+        <button class="side-item" data-view="support" onclick="go('support')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+            <span>Nearby Hospital Support</span>
+        </button>
+        <button class="side-item" data-view="analytics" onclick="go('analytics')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <span>Analytics</span>
+        </button>
+        <button class="side-item" data-view="command" onclick="go('command')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Prevention Status</span>
+        </button>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="sidebar-sys">
+            <span class="sidebar-sys-dot"></span>
+            SYSTEM OPERATIONAL
+        </div>
+        <div class="sidebar-sys sidebar-team">DEVELOPED BY TEAM SYNAPTIX</div>
+    </div>
+</aside>
+
+<!-- mobile topbar nav -->
+<nav class="mobile-topnav">
+    <button class="mobile-menu-btn" onclick="toggleMobileNav()">☰</button>
+    <span class="mobile-title">AI HOSPITAL CRISIS TWIN</span>
+    <button class="side-item" data-view="dashboard" onclick="go('dashboard')">⌂</button>
+</nav>
+
+<!-- ==================== MAIN CONTENT (VIEWS) ==================== -->
+<main class="main">
+
+<!-- Workflow progress indicator (contextual, appears during the connected crisis workflow) -->
+<div class="wf-progress" id="wf-progress">
+    <div class="wfp-step" data-wfp="simulator"><span class="wfp-num">①</span>Crisis Simulation</div>
+    <div class="wfp-arrow">→</div>
+    <div class="wfp-step" data-wfp="plan"><span class="wfp-num">②</span>Prevention Plan</div>
+    <div class="wfp-arrow">→</div>
+    <div class="wfp-step" data-wfp="action"><span class="wfp-num">③</span>Hospital Action</div>
+    <div class="wfp-arrow">→</div>
+    <div class="wfp-step" data-wfp="resource"><span class="wfp-num">④</span>Resource Optimization</div>
+    <div class="wfp-arrow">→</div>
+    <div class="wfp-step" data-wfp="reduction"><span class="wfp-num">⑤</span>Risk Reduction</div>
+</div>
+
+<!-- ============ VIEW: HOSPITAL CRISIS OVERVIEW (DASHBOARD) ============ -->
+<section class="view active" id="view-dashboard">
+    <div class="view-header">
+        <div>
+            <h1 class="view-title">Hospital Crisis Overview</h1>
+            <p class="view-sub">Predict risks. Prevent crises. Prepare hospitals.</p>
+        </div>
+        <span class="view-time" id="clock"></span>
+    </div>
+
+    <div class="overview-intro glass">
+        <p class="overview-intro-text">Analyze hospital conditions, predict potential crises, and take preventive action before they become critical.</p>
+    </div>
+
+    <div class="workflow-strip">
+        <span class="wf-step">LIVE DATA</span><span class="wf-arrow">→</span>
+        <span class="wf-step">PREDICT</span><span class="wf-arrow">→</span>
+        <span class="wf-step">WARN</span><span class="wf-arrow">→</span>
+        <span class="wf-step active-step">PREVENT</span>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="health-score-card glass">
+            <div class="hs-header">
+                <span class="hs-label">CURRENT HOSPITAL STATUS</span>
+            </div>
+            <div class="hs-score" id="health-score">68</div>
+            <div class="hs-bar"><div class="hs-fill" id="health-fill" style="width:68%"></div></div>
+            <span class="hs-status" id="health-status">MODERATE RISK</span>
+        </div>
+
+        <div class="dash-kpi-card" data-kpi="risk">
+            <span class="dash-kpi-label">OVERALL RISK LEVEL</span>
+            <span class="dash-kpi-value text-red" id="dash-risk">72</span>
+            <span class="dash-kpi-status status-high">HIGH</span>
+        </div>
+        <div class="dash-kpi-card" data-kpi="icu">
+            <span class="dash-kpi-label">ICU OCCUPANCY</span>
+            <span class="dash-kpi-value text-red" id="dash-icu">91%</span>
+            <span class="dash-kpi-status status-critical">CRITICAL</span>
+        </div>
+        <div class="dash-kpi-card" data-kpi="emergency">
+            <span class="dash-kpi-label">EMERGENCY LOAD</span>
+            <span class="dash-kpi-value text-orange" id="dash-emergency">88%</span>
+            <span class="dash-kpi-status status-high">HIGH</span>
+        </div>
+        <div class="dash-kpi-card" data-kpi="staff">
+            <span class="dash-kpi-label">AVAILABLE STAFF</span>
+            <span class="dash-kpi-value text-cyan" id="dash-staff">64%</span>
+            <span class="dash-kpi-status status-moderate">MODERATE</span>
+        </div>
+        <div class="dash-kpi-card" data-kpi="alerts">
+            <span class="dash-kpi-label">ACTIVE EARLY WARNINGS</span>
+            <span class="dash-kpi-value text-purple" id="dash-alerts">3</span>
+            <span class="dash-kpi-status status-attention">ATTENTION</span>
+        </div>
+    </div>
+
+    <div class="overview-prediction glass">
+        <div class="overview-pred-left">
+            <span class="op-label">TOP PREDICTED CRISIS</span>
+            <span class="op-value" id="overview-top-crisis">ICU OVERLOAD</span>
+            <span class="op-risk text-red">RISK: CRITICAL · WITHIN 45 MIN</span>
+        </div>
+        <div class="overview-pred-right">
+            <span class="op-label">RECOMMENDED IMMEDIATE ACTION</span>
+            <span class="op-action" id="overview-top-action">Activate backup ICU beds and notify backup medical staff immediately.</span>
+            <button class="btn btn-primary btn-sm" onclick="go('response')">VIEW PREVENTIVE ACTION</button>
+        </div>
+    </div>
+
+    <div class="dashboard-actions">
+        <button class="btn btn-primary btn-lg" onclick="go('predict')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            VIEW AI RISK PREDICTION
+        </button>
+        <button class="btn btn-secondary btn-lg" onclick="go('monitor')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            VIEW LIVE DATA
+        </button>
+        <button class="btn btn-primary btn-lg btn-violet" onclick="go('response')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            VIEW PREVENTIVE ACTION
+        </button>
+        <button class="btn btn-outline btn-lg" onclick="go('simulator')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            VIEW CRISIS SIMULATOR
+        </button>
+    </div>
+
+    <div class="glass core-flow-card">
+        <div class="cf-head">
+            <div>
+                <h4 class="panel-title">INTELLIGENCE CYCLE</h4>
+                <p class="cf-sub">Predict → Explain → Warn → Prevent → Simulate → Act → Optimize → Reduce Risk</p>
+            </div>
+        </div>
+        <div class="core-flow">
+            <div class="cf-step"><span class="cf-num">01</span><span class="cf-name">LIVE HOSPITAL DATA</span></div>
+            <div class="cf-arrow">↓</div>
+            <div class="cf-step"><span class="cf-num">02</span><span class="cf-name">TREND ANALYSIS</span></div>
+            <div class="cf-arrow">↓</div>
+            <div class="cf-step"><span class="cf-num">03</span><span class="cf-name">AI RISK ENGINE</span></div>
+            <div class="cf-arrow">↓</div>
+            <div class="cf-step"><span class="cf-num">04</span><span class="cf-name">CRISIS PREDICTION</span></div>
+            <div class="cf-arrow">↓</div>
+            <div class="cf-step"><span class="cf-num">05</span><span class="cf-name">EXPLAINABLE AI</span><span class="cf-note">Why is this predicted?</span></div>
+            <div class="cf-arrow">↓</div>
+            <div class="cf-step"><span class="cf-num">06</span><span class="cf-name">EARLY WARNING</span></div>
+            <div class="cf-arrow">↓</div>
+            <div class="cf-step"><span class="cf-num">07</span><span class="cf-name">IMPACT ANALYSIS</span></div>
+            <div class="cf-arrow">↓</div>
+            <div class="cf-step"><span class="cf-num">08</span><span class="cf-name">AI PREVENTION PLAN</span></div>
+            <div class="cf-arrow">↓</div>
+            <div class="cf-step cf-sim"><span class="cf-num">09</span><span class="cf-name">CRISIS SIMULATION</span><span class="cf-note">What may happen if no action is taken?</span></div>
+            <div class="cf-arrow">↓</div>
+            <div class="cf-step"><span class="cf-num">10</span><span class="cf-name">HOSPITAL ACTION</span></div>
+            <div class="cf-arrow">↓</div>
+            <div class="cf-step"><span class="cf-num">11</span><span class="cf-name">RESOURCE OPTIMIZATION</span></div>
+            <div class="cf-arrow">↓</div>
+            <div class="cf-step cf-end"><span class="cf-num">12</span><span class="cf-name">RISK REDUCTION</span></div>
+        </div>
+    </div>
+
+    <div class="dashboard-bottom">
+        <div class="glass recent-activity">
+            <h4 class="panel-title">RECENT ACTIVITY</h4>
+            <div class="mini-timeline">
+                <div class="mt-item"><span class="mt-dot c"></span><span class="mt-text">10:52 — AI predicted ICU overload risk</span></div>
+                <div class="mt-item"><span class="mt-dot y"></span><span class="mt-text">10:50 — Early warning generated for ICU</span></div>
+                <div class="mt-item"><span class="mt-dot r"></span><span class="mt-text">10:48 — Preventive action plan generated</span></div>
+                <div class="mt-item"><span class="mt-dot o"></span><span class="mt-text">10:44 — ICU occupancy reached 90%</span></div>
+            </div>
+            <button class="btn btn-outline btn-sm btn-block" onclick="addDashboardEvent()">REFRESH FEED</button>
+        </div>
+        <div class="glass live-status-panel">
+            <h4 class="panel-title">LIVE STATUS</h4>
+            <div class="ls-row"><span>Live Hospital Data</span><span class="text-green">CONNECTED</span></div>
+            <div class="ls-row"><span>AI Prediction Engine</span><span class="text-green">READY</span></div>
+            <div class="ls-row"><span>Early Warning System</span><span class="text-green">ACTIVE</span></div>
+            <div class="ls-row"><span>Prevention Plan</span><span class="text-green" id="ls-response">READY</span></div>
+            <div class="ls-row"><span>System</span><span class="text-green">OPERATIONAL</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ VIEW: LIVE HOSPITAL MONITOR ============ -->
+<section class="view" id="view-monitor">
+    <div class="view-header">
+        <div>
+            <h1 class="view-title">Live Hospital Monitor</h1>
+            <p class="view-sub">Current hospital conditions used as input data for AI prediction</p>
+        </div>
+        <span class="view-badge live-badge">● LIVE</span>
+    </div>
+
+    <div class="monitor-grid">
+        <div class="dept-card" data-dept="ICU" onclick="openDept('ICU')">
+            <div class="dept-card-head"><span class="dept-card-name">ICU</span><span class="dept-card-pulse r"></span></div>
+            <div class="dept-card-occu">91%</div>
+            <div class="twin-bar"><div class="twin-bar-fill fill-critical" style="width:91%"></div></div>
+            <div class="dept-card-meta"><span>46/50</span><span class="text-red">CRITICAL</span></div>
+        </div>
+        <div class="dept-card" data-dept="EMERGENCY" onclick="openDept('EMERGENCY')">
+            <div class="dept-card-head"><span class="dept-card-name">Emergency</span><span class="dept-card-pulse o"></span></div>
+            <div class="dept-card-occu">88%</div>
+            <div class="twin-bar"><div class="twin-bar-fill fill-high" style="width:88%"></div></div>
+            <div class="dept-card-meta"><span>44/50</span><span class="text-orange">HIGH</span></div>
+        </div>
+        <div class="dept-card" data-dept="GENERAL WARD" onclick="openDept('GENERAL WARD')">
+            <div class="dept-card-head"><span class="dept-card-name">General Ward</span><span class="dept-card-pulse y"></span></div>
+            <div class="dept-card-occu">72%</div>
+            <div class="twin-bar"><div class="twin-bar-fill fill-warn" style="width:72%"></div></div>
+            <div class="dept-card-meta"><span>144/200</span><span class="text-yellow">MODERATE</span></div>
+        </div>
+        <div class="dept-card" data-dept="STAFF" onclick="openDept('STAFF')">
+            <div class="dept-card-head"><span class="dept-card-name">Staff</span><span class="dept-card-pulse y"></span></div>
+            <div class="dept-card-occu">64%</div>
+            <div class="twin-bar"><div class="twin-bar-fill fill-moderate" style="width:64%"></div></div>
+            <div class="dept-card-meta"><span>on duty</span><span class="text-cyan">MODERATE</span></div>
+        </div>
+        <div class="dept-card" data-dept="LABORATORY" onclick="openDept('LABORATORY')">
+            <div class="dept-card-head"><span class="dept-card-name">Laboratory</span><span class="dept-card-pulse g"></span></div>
+            <div class="dept-card-occu">48%</div>
+            <div class="twin-bar"><div class="twin-bar-fill fill-ok" style="width:48%"></div></div>
+            <div class="dept-card-meta"><span>24/50</span><span class="text-green">LOW</span></div>
+        </div>
+        <div class="dept-card" data-dept="OPERATION THEATRE" onclick="openDept('OPERATION THEATRE')">
+            <div class="dept-card-head"><span class="dept-card-name">Operation Theatre</span><span class="dept-card-pulse g"></span></div>
+            <div class="dept-card-occu">55%</div>
+            <div class="twin-bar"><div class="twin-bar-fill fill-moderate" style="width:55%"></div></div>
+            <div class="dept-card-meta"><span>11/20</span><span class="text-cyan">MODERATE</span></div>
+        </div>
+    </div>
+
+    <!-- Department detail modal -->
+    <div class="modal-backdrop" id="dept-modal" onclick="closeDeptModal(event)">
+        <div class="modal glass" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeDeptModal()">✕</button>
+            <h3 class="modal-title" id="dept-modal-title">ICU</h3>
+            <div class="modal-risk-row">
+                <span class="dept-risk" id="dept-modal-risk">CRITICAL</span>
+                <span class="modal-trend" id="dept-modal-trend">Trend: Increasing</span>
+            </div>
+            <div class="modal-stats">
+                <div class="modal-stat"><span class="ms-label">Capacity</span><span class="ms-value" id="d-capacity">50</span></div>
+                <div class="modal-stat"><span class="ms-label">Occupied</span><span class="ms-value" id="d-occupied">46</span></div>
+                <div class="modal-stat"><span class="ms-label">Available</span><span class="ms-value" id="d-available">4</span></div>
+            </div>
+            <div class="modal-issue">
+                <span class="mi-label">CURRENT CONDITION</span>
+                <p id="d-issue">ICU capacity approaching maximum. Elevated patient inflow detected.</p>
+            </div>
+            <div class="modal-reco">
+                <span class="mi-label">AI PREDICTION &amp; PREVENTION</span>
+                <p id="d-reco">AI predicts ICU overload risk. Recommended: activate backup ICU beds and redirect non-critical patients to prevent escalation.</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary btn-sm" onclick="analyzeFutureRisk()">ANALYZE FUTURE RISK</button>
+                <button class="btn btn-secondary btn-sm" onclick="viewDetails()">VIEW DETAILS</button>
+                <button class="btn btn-outline btn-sm" onclick="requestDeptSupport()">REQUEST SUPPORT</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ VIEW: DIGITAL TWIN ============ -->
+<section class="view" id="view-twin">
+    <div class="view-header">
+        <div>
+            <h1 class="view-title">Live Hospital Digital Twin</h1>
+            <p class="view-sub">Visualize which departments are affected by predicted risks</p>
+        </div>
+        <span class="view-badge">SYNCED</span>
+    </div>
+
+    <div class="twin-layout">
+        <div class="twin-map glass">
+            <div class="twin-corridor-h"></div>
+            <div class="twin-corridor-v"></div>
+            <div class="twin-unit twin-icu" data-dept="ICU" onclick="selectTwinDept(this,'ICU')">
+                <div class="twin-unit-head"><span>ICU</span><span class="tw-pulse r"></span></div>
+                <div class="twin-occupancy">91%</div>
+                <div class="twin-bar"><div class="twin-bar-fill fill-critical" style="width:91%"></div></div>
+                <div class="twin-capacity">46/50</div>
+            </div>
+            <div class="twin-unit" data-dept="EMERGENCY" onclick="selectTwinDept(this,'EMERGENCY')">
+                <div class="twin-unit-head"><span>Emergency</span><span class="tw-pulse o"></span></div>
+                <div class="twin-occupancy">88%</div>
+                <div class="twin-bar"><div class="twin-bar-fill fill-high" style="width:88%"></div></div>
+                <div class="twin-capacity">44/50</div>
+            </div>
+            <div class="twin-unit" data-dept="GENERAL WARD" onclick="selectTwinDept(this,'GENERAL WARD')">
+                <div class="twin-unit-head"><span>General Ward</span><span class="tw-pulse y"></span></div>
+                <div class="twin-occupancy">72%</div>
+                <div class="twin-bar"><div class="twin-bar-fill fill-warn" style="width:72%"></div></div>
+                <div class="twin-capacity">144/200</div>
+            </div>
+            <div class="twin-unit" data-dept="LABORATORY" onclick="selectTwinDept(this,'LABORATORY')">
+                <div class="twin-unit-head"><span>Laboratory</span><span class="tw-pulse g"></span></div>
+                <div class="twin-occupancy">48%</div>
+                <div class="twin-bar"><div class="twin-bar-fill fill-ok" style="width:48%"></div></div>
+                <div class="twin-capacity">24/50</div>
+            </div>
+            <div class="twin-unit" data-dept="OPERATION THEATRE" onclick="selectTwinDept(this,'OPERATION THEATRE')">
+                <div class="twin-unit-head"><span>Operation Theatre</span><span class="tw-pulse g"></span></div>
+                <div class="twin-occupancy">55%</div>
+                <div class="twin-bar"><div class="twin-bar-fill fill-moderate" style="width:55%"></div></div>
+                <div class="twin-capacity">11/20</div>
+            </div>
+            <div class="twin-unit" data-dept="STAFF COORDINATION" onclick="selectTwinDept(this,'STAFF COORDINATION')">
+                <div class="twin-unit-head"><span>Staff Unit</span><span class="tw-pulse y"></span></div>
+                <div class="twin-occupancy">64%</div>
+                <div class="twin-bar"><div class="twin-bar-fill fill-moderate" style="width:64%"></div></div>
+                <div class="twin-capacity">on duty</div>
+            </div>
+        </div>
+
+        <div class="twin-detail glass" id="twin-detail">
+            <div class="twin-detail-empty" id="twin-empty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                <p>Select a department<br>to view its twin data</p>
+            </div>
+            <div class="twin-detail-content" id="twin-content" style="display:none">
+                <h3 id="twin-title">ICU</h3>
+                <div class="twin-detail-stats">
+                    <div class="td-stat"><span>Occupancy</span><b id="td-occu">91%</b></div>
+                    <div class="td-stat"><span>Risk</span><b id="td-risk" class="text-red">CRITICAL</b></div>
+                    <div class="td-stat"><span>Beds Available</span><b id="td-beds">4</b></div>
+                </div>
+                <div class="td-actions">
+                    <button class="btn btn-primary btn-sm btn-block" onclick="analyzeDept()">VIEW PREDICTED RISK</button>
+                    <button class="btn btn-outline btn-sm btn-block" onclick="simulateDeptLoad()">SIMULATE LOAD</button>
+                    <button class="btn btn-secondary btn-sm btn-block" onclick="optimizeDept()">OPTIMIZE RESOURCES</button>
+                </div>
+                <div class="td-result" id="td-result"></div>
+            </div>
+        </div>
+    </div>
+
+        <div class="glass twin-impact-card">
+            <div class="explain-head">
+                <span class="explain-icon">🔗</span>
+                <div>
+                    <h4 class="panel-title">CRISIS IMPACT RELATIONSHIPS</h4>
+                    <p class="explain-sub">How a predicted crisis spreads across departments — updated live with AI predictions</p>
+                </div>
+            </div>
+            <div class="dept-status-row">
+                <div class="ds-chip"><b>ICU</b><span class="ds-val text-red">91% · CRITICAL</span></div>
+                <div class="ds-chip"><b>Emergency</b><span class="ds-val text-orange">88% · HIGH</span></div>
+                <div class="ds-chip"><b>General Ward</b><span class="ds-val text-yellow">72% · MODERATE</span></div>
+                <div class="ds-chip"><b>Staff</b><span class="ds-val text-orange">64% · WARNING</span></div>
+                <div class="ds-chip"><b>Laboratory</b><span class="ds-val text-green">48% · NORMAL</span></div>
+                <div class="ds-chip"><b>Operation Theatre</b><span class="ds-val text-green">55% · NORMAL</span></div>
+            </div>
+            <div class="twin-impacts" id="twin-impacts"></div>
+        </div>
+</section>
+<section class="view" id="view-warning">
+    <div class="view-header">
+        <div>
+            <h1 class="view-title">Early Warning Center</h1>
+            <p class="view-sub">AI-generated warnings from predicted crises — take preventive action early</p>
+        </div>
+        <span class="view-badge warning-badge" id="warn-count">5 ALERTS</span>
+    </div>
+
+    <div class="warnings-grid" id="warnings-grid">
+        <div class="warning-card glass w-critical" data-wid="1">
+            <div class="warning-left">
+                <div class="warning-f icon-warn">!</div>
+                <div>
+                    <h4 class="warning-title">ICU Overload Warning</h4>
+                    <p class="warning-text">ICU occupancy at 91% and predicted to reach full capacity.</p>
+                </div>
+            </div>
+            <div class="warning-tags"><span class="wt sev-crit">CRITICAL</span><span class="wt">Dept: ICU</span></div>
+            <div class="warning-details">
+                <div class="wd-row"><span>What may happen</span><span>ICU may run out of beds</span></div>
+                <div class="wd-row"><span>When</span><span>Within 45 minutes</span></div>
+                <div class="wd-row"><span>Why</span><span>Increasing patient inflow, decreasing beds</span></div>
+                <div class="wd-row"><span>Affected dept</span><span>ICU, Emergency, Staff</span></div>
+            </div>
+            <div class="warning-actions">
+                <button class="btn btn-primary btn-sm" onclick="viewPreventionPlan(1)">VIEW PREVENTION PLAN</button>
+                <button class="btn btn-outline btn-sm" onclick="viewWarningDetail(1)">VIEW FULL DETAILS</button>
+                <button class="btn btn-secondary btn-sm" onclick="acknowledgeWarning(this)">ACKNOWLEDGE</button>
+            </div>
+        </div>
+
+        <div class="warning-card glass w-high" data-wid="2">
+            <div class="warning-left">
+                <div class="warning-f icon-warn">!</div>
+                <div>
+                    <h4 class="warning-title">Emergency Patient Surge Warning</h4>
+                    <p class="warning-text">Admission rate up 18% in the last 2 hours.</p>
+                </div>
+            </div>
+            <div class="warning-tags"><span class="wt sev-high">HIGH</span><span class="wt">Dept: Emergency</span></div>
+            <div class="warning-details">
+                <div class="wd-row"><span>What may happen</span><span>Emergency load may exceed capacity</span></div>
+                <div class="wd-row"><span>When</span><span>Within 2 hours</span></div>
+                <div class="wd-row"><span>Why</span><span>Regional influx of urgent cases</span></div>
+                <div class="wd-row"><span>Affected dept</span><span>Emergency, Triage, Staff</span></div>
+            </div>
+            <div class="warning-actions">
+                <button class="btn btn-primary btn-sm" onclick="viewPreventionPlan(2)">VIEW PREVENTION PLAN</button>
+                <button class="btn btn-outline btn-sm" onclick="viewWarningDetail(2)">VIEW FULL DETAILS</button>
+                <button class="btn btn-secondary btn-sm" onclick="acknowledgeWarning(this)">ACKNOWLEDGE</button>
+            </div>
+        </div>
+
+        <div class="warning-card glass w-medium" data-wid="3">
+            <div class="warning-left">
+                <div class="warning-f icon-warn">!</div>
+                <div>
+                    <h4 class="warning-title">Staff Shortage Warning</h4>
+                    <p class="warning-text">Nurse availability down to 64%, below 70% safety threshold.</p>
+                </div>
+            </div>
+            <div class="warning-tags"><span class="wt sev-med">MEDIUM</span><span class="wt">Dept: Staff</span></div>
+            <div class="warning-details">
+                <div class="wd-row"><span>What may happen</span><span>Delayed patient care</span></div>
+                <div class="wd-row"><span>When</span><span>Within 3 hours</span></div>
+                <div class="wd-row"><span>Why</span><span>Shift gaps and increased demand</span></div>
+                <div class="wd-row"><span>Affected dept</span><span>Staff, Emergency, ICU</span></div>
+            </div>
+            <div class="warning-actions">
+                <button class="btn btn-primary btn-sm" onclick="viewPreventionPlan(3)">VIEW PREVENTION PLAN</button>
+                <button class="btn btn-outline btn-sm" onclick="viewWarningDetail(3)">VIEW FULL DETAILS</button>
+                <button class="btn btn-secondary btn-sm" onclick="acknowledgeWarning(this)">ACKNOWLEDGE</button>
+            </div>
+        </div>
+
+        <div class="warning-card glass w-low" data-wid="4">
+            <div class="warning-left">
+                <div class="warning-f icon-warn">!</div>
+                <div>
+                    <h4 class="warning-title">Bed Shortage Warning</h4>
+                    <p class="warning-text">Available beds decreasing as occupancy rises across wards.</p>
+                </div>
+            </div>
+            <div class="warning-tags"><span class="wt sev-low">LOW</span><span class="wt">Dept: General Ward</span></div>
+            <div class="warning-details">
+                <div class="wd-row"><span>What may happen</span><span>Bed shortage for new patients</span></div>
+                <div class="wd-row"><span>When</span><span>Within 4 hours</span></div>
+                <div class="wd-row"><span>Why</span><span>Sustained high occupancy</span></div>
+                <div class="wd-row"><span>Affected dept</span><span>General Ward, Emergency</span></div>
+            </div>
+            <div class="warning-actions">
+                <button class="btn btn-primary btn-sm" onclick="viewPreventionPlan(4)">VIEW PREVENTION PLAN</button>
+                <button class="btn btn-outline btn-sm" onclick="viewWarningDetail(4)">VIEW FULL DETAILS</button>
+                <button class="btn btn-secondary btn-sm" onclick="acknowledgeWarning(this)">ACKNOWLEDGE</button>
+            </div>
+        </div>
+
+        <div class="warning-card glass w-medium" data-wid="5">
+            <div class="warning-left">
+                <div class="warning-f icon-warn">!</div>
+                <div>
+                    <h4 class="warning-title">Operation Theatre Bottleneck Warning</h4>
+                    <p class="warning-text">OT scheduling backlog increasing surgery wait times.</p>
+                </div>
+            </div>
+            <div class="warning-tags"><span class="wt sev-med">MEDIUM</span><span class="wt">Dept: Operation Theatre</span></div>
+            <div class="warning-details">
+                <div class="wd-row"><span>What may happen</span><span>Elective surgery delays</span></div>
+                <div class="wd-row"><span>When</span><span>Within 5 hours</span></div>
+                <div class="wd-row"><span>Why</span><span>Overlapping emergency surgeries</span></div>
+                <div class="wd-row"><span>Affected dept</span><span>Operation Theatre, Staff</span></div>
+            </div>
+            <div class="warning-actions">
+                <button class="btn btn-primary btn-sm" onclick="viewPreventionPlan(5)">VIEW PREVENTION PLAN</button>
+                <button class="btn btn-outline btn-sm" onclick="viewWarningDetail(5)">VIEW FULL DETAILS</button>
+                <button class="btn btn-secondary btn-sm" onclick="acknowledgeWarning(this)">ACKNOWLEDGE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Warning detail modal -->
+    <div class="modal-backdrop" id="warning-modal" onclick="closeWarningModal(event)">
+        <div class="modal glass" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeWarningModal()">✕</button>
+            <h3 class="modal-title" id="wm-title">ICU Overload Warning</h3>
+            <div class="modal-risk-row"><span class="dept-risk sev-crit" id="wm-sev">CRITICAL</span><span>AFFECTED DEPT: <b id="wm-dept">ICU</b></span></div>
+            <div class="warning-details">
+                <div class="wd-row"><span>WHY</span><span id="wm-cause">Increasing patient inflow, decreasing beds</span></div>
+                <div class="wd-row"><span>WHAT / WHEN</span><span id="wm-impact">ICU may run out of beds · Within 45 minutes</span></div>
+                <div class="wd-row"><span>RECOMMENDED</span><span id="wm-reco">Activate backup ICU beds and notify backup medical staff now</span></div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary btn-sm" onclick="viewPreventionPlanFromModal()">VIEW PREVENTION PLAN</button>
+                <button class="btn btn-secondary btn-sm" onclick="acknowledgeFromModal()">ACKNOWLEDGE</button>
+                <button class="btn btn-outline btn-sm" onclick="closeWarningModal()">CLOSE</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ VIEW: AI CRISIS PREDICTION ============ -->
+<section class="view" id="view-predict">
+    <div class="view-header">
+        <div>
+            <h1 class="view-title">AI Risk Prediction</h1>
+            <p class="view-sub">AI predicts potential hospital crises before they happen — select a predicted risk to see the analysis</p>
+        </div>
+        <span class="view-badge">PREDICTIVE AI</span>
+    </div>
+
+    <div class="predict-layout">
+        <div class="glass scenario-panel">
+            <h4 class="panel-title">PREDICTED RISKS</h4>
+            <div class="pred-scenarios">
+                <button class="pred-scenario active" data-pred="icu" onclick="selectPrediction('icu', this)">
+                    <span class="ps-icon">🛏️</span><span class="ps-name">ICU Overload Risk</span>
+                    <span class="ps-badge high">HIGH</span>
+                </button>
+                <button class="pred-scenario" data-pred="emergency" onclick="selectPrediction('emergency', this)">
+                    <span class="ps-icon">🚨</span><span class="ps-name">Emergency Patient Surge Risk</span>
+                    <span class="ps-badge high">HIGH</span>
+                </button>
+                <button class="pred-scenario" data-pred="beds" onclick="selectPrediction('beds', this)">
+                    <span class="ps-icon">🛌</span><span class="ps-name">Bed Shortage Risk</span>
+                    <span class="ps-badge medium">MEDIUM</span>
+                </button>
+                <button class="pred-scenario" data-pred="staff" onclick="selectPrediction('staff', this)">
+                    <span class="ps-icon">👨‍⚕️</span><span class="ps-name">Staff Shortage Risk</span>
+                    <span class="ps-badge medium">MEDIUM</span>
+                </button>
+                <button class="pred-scenario" data-pred="resources" onclick="selectPrediction('resources', this)">
+                    <span class="ps-icon">📦</span><span class="ps-name">Resource Shortage Risk</span>
+                    <span class="ps-badge low">LOW</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="glass prediction-detail">
+            <div class="predict-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.09 6.26L20 11l-6 2.26L12 20l-2-6.74L4 11l5.91-2.74L12 2z"/></svg>
+                PREDICTED CRISIS
+            </div>
+            <h3 class="predict-crisis" id="pred-name">ICU OVERLOAD RISK</h3>
+            <div class="predict-metrics">
+                <div class="predict-metric"><span class="pm-label">RISK LEVEL</span><span class="pm-value text-red" id="pred-risk">HIGH</span></div>
+                <div class="predict-metric"><span class="pm-label">PROBABILITY</span><span class="pm-value text-cyan" id="pred-conf">89%</span></div>
+                <div class="predict-metric"><span class="pm-label">EXPECTED TIME</span><span class="pm-value text-orange" id="pred-time">45 MIN</span></div>
+                <div class="predict-metric"><span class="pm-label">CONFIDENCE</span><span class="pm-value text-purple" id="pred-conf2">87%</span></div>
+            </div>
+            <div class="risk-meter-wrap">
+                <div class="risk-meter"><div class="risk-meter-fill" id="pred-meter" style="width:72%"></div></div>
+                <div class="risk-meter-labels"><span>LOW</span><span>MODERATE</span><span>HIGH</span><span>CRITICAL</span></div>
+            </div>
+            <div class="pred-analysis">
+                <span class="mi-label">WHY IS THIS PREDICTED?</span>
+                <p id="pred-analysis">Data-driven reasons: increasing patient inflow, shrinking available ICU beds, and reduced staff availability detected in live hospital data.</p>
+            </div>
+            <div class="pred-impact">
+                <span class="mi-label">EXPECTED IMPACT</span>
+                <p id="pred-impact">ICU may run out of beds, delaying critical care. Emergency admissions may be redirected, increasing load on other departments.</p>
+            </div>
+            <div class="pred-reco">
+                <span class="mi-label">RECOMMENDED PREVENTIVE ACTION</span>
+                <p id="pred-reco">Activate backup ICU beds and notify backup medical staff to prevent escalation.</p>
+            </div>
+            <button class="btn btn-primary btn-block btn-lg" onclick="goToWarning()">VIEW EARLY WARNING →</button>
+            <button class="btn btn-secondary btn-block" onclick="go('response')">VIEW PREVENTIVE ACTION PLAN</button>
+        </div>
+    </div>
+
+    <div class="predict-logic-grid">
+        <div class="glass explain-card">
+            <div class="explain-head">
+                <span class="explain-icon">🤖</span>
+                <div>
+                    <h4 class="panel-title">WHY DID AI PREDICT THIS CRISIS?</h4>
+                    <p class="explain-sub">Explainable AI — the risk score is built from live hospital risk signals</p>
+                </div>
+            </div>
+            <div class="ai-chips">
+                <div class="ai-chip"><span class="ai-chip-label">AI RISK SCORE</span><b class="ai-chip-value text-red" id="pred-ai-score">89</b></div>
+                <div class="ai-chip"><span class="ai-chip-label">PREDICTION CONFIDENCE</span><b class="ai-chip-value text-purple" id="pred-ai-conf">92%</b></div>
+                <div class="ai-chip"><span class="ai-chip-label">TREND DIRECTION</span><b class="ai-chip-value text-orange" id="pred-trend">Increasing</b></div>
+            </div>
+            <div class="ai-factors" id="pred-factors">
+                <div class="ai-factor"><span>ICU Occupancy Trend</span><b class="text-red">Increasing</b></div>
+                <div class="ai-factor"><span>Emergency Patient Inflow</span><b class="text-orange">High</b></div>
+                <div class="ai-factor"><span>Available ICU Beds</span><b class="text-orange">Decreasing</b></div>
+                <div class="ai-factor"><span>Bed Release Rate</span><b class="text-yellow">Slow</b></div>
+                <div class="ai-factor"><span>Staff Availability</span><b class="text-orange">Low</b></div>
+            </div>
+        </div>
+
+        <div class="glass logic-card">
+            <div class="explain-head">
+                <span class="explain-icon">🧠</span>
+                <div>
+                    <h4 class="panel-title">HOW THE PREDICTION IS REACHED</h4>
+                    <p class="explain-sub">Input signals → trend analysis → AI risk assessment → predicted crisis</p>
+                </div>
+            </div>
+            <div class="logic-flow">
+                <div class="logic-step">
+                    <span class="logic-label">INPUT SIGNALS</span>
+                    <div class="logic-tags" id="pred-inputs">
+                        <span class="logic-tag">ICU Occupancy → 91%</span>
+                        <span class="logic-tag">Emergency Inflow → Increasing</span>
+                        <span class="logic-tag">Available Beds → 9</span>
+                        <span class="logic-tag">Staff Availability → 64%</span>
+                    </div>
+                </div>
+                <div class="logic-arrow">↓</div>
+                <div class="logic-step">
+                    <span class="logic-label">TREND ANALYSIS</span>
+                    <p class="logic-text" id="pred-trend-text">ICU occupancy increasing continuously. Emergency load increasing. Available bed capacity decreasing.</p>
+                </div>
+                <div class="logic-arrow">↓</div>
+                <div class="logic-step">
+                    <span class="logic-label">AI RISK ASSESSMENT</span>
+                    <p class="logic-text" id="pred-assessment">Risk Score: 89% &nbsp;·&nbsp; Confidence: 92% &nbsp;·&nbsp; Trend: Increasing</p>
+                </div>
+                <div class="logic-arrow">↓</div>
+                <div class="logic-step">
+                    <span class="logic-label">PREDICTED CRISIS</span>
+                    <p class="logic-conclusion" id="pred-conclusion">🚨 ICU capacity may reach critical level</p>
+                    <span class="logic-time" id="pred-conclusion-time">Expected within 1–4 hours · 45 MIN</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ VIEW: CRISIS SIMULATOR ============ -->
+<section class="view" id="view-simulator">
+    <div class="view-header">
+        <div>
+            <h1 class="view-title">Crisis Simulator</h1>
+            <p class="view-sub">Visualize what could happen if a predicted crisis is not prevented</p>
+        </div>
+        <span class="view-badge">SUPPORT: WHAT-IF</span>
+    </div>
+
+    <div class="sim-outer">
+        <div class="glass sim-configure">
+            <h4 class="panel-title">1. SELECT CRISIS SCENARIO</h4>
+            <div class="scenario-grid">
+                <button class="scenario-card selected" data-scn="icu" onclick="selectSimScenario(this)">
+                    <span class="scenario-icon">🛏️</span><span class="scenario-name">ICU Overload</span>
+                </button>
+                <button class="scenario-card" data-scn="emergency" onclick="selectSimScenario(this)">
+                    <span class="scenario-icon">🚨</span><span class="scenario-name">Emergency Patient Surge</span>
+                </button>
+                <button class="scenario-card" data-scn="staff" onclick="selectSimScenario(this)">
+                    <span class="scenario-icon">👨‍⚕️</span><span class="scenario-name">Staff Shortage</span>
+                </button>
+                <button class="scenario-card" data-scn="beds" onclick="selectSimScenario(this)">
+                    <span class="scenario-icon">🛌</span><span class="scenario-name">Bed Shortage</span>
+                </button>
+                <button class="scenario-card" data-scn="mass" onclick="selectSimScenario(this)">
+                    <span class="scenario-icon">🚑</span><span class="scenario-name">Mass Casualty Event</span>
+                </button>
+            </div>
+
+            <h4 class="panel-title">2. SELECT SEVERITY</h4>
+            <div class="intensity-selector" id="intensity-selector">
+                <button class="intensity-option" data-int="LOW" onclick="selectSimIntensity(this)">LOW</button>
+                <button class="intensity-option active" data-int="MEDIUM" onclick="selectSimIntensity(this)">MODERATE</button>
+                <button class="intensity-option" data-int="HIGH" onclick="selectSimIntensity(this)">HIGH</button>
+                <button class="intensity-option" data-int="CRITICAL" onclick="selectSimIntensity(this)">CRITICAL</button>
+            </div>
+
+            <button class="btn btn-primary btn-block btn-lg" id="run-sim-btn" onclick="startSimulation()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                RUN CRISIS SIMULATION
+            </button>
+        </div>
+
+        <div class="glass sim-stage" id="sim-stage">
+            <div class="sim-idle" id="sim-idle">
+                <div class="sim-idle-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+                <p>Visualize what could happen if the predicted crisis is <b>not prevented</b>.<br>Select a scenario and severity, run the simulation, then view the recommended preventive actions.</p>
+            </div>
+
+            <div class="sim-live" id="sim-live" style="display:none">
+                <div class="sim-status-row">
+                    <span id="sim-phase" class="sim-phase">INITIALIZING...</span>
+                    <span class="sim-live-dot"></span>
+                </div>
+                <div class="sim-metrics">
+                    <div class="sim-metric"><span class="sm-label">PATIENT COUNT</span><span class="sm-value" id="sm-patients">126</span></div>
+                    <div class="sim-metric"><span class="sm-label">EMERGENCY LOAD</span><span class="sm-value" id="sm-emergency">88%</span></div>
+                    <div class="sim-metric"><span class="sm-label">ICU OCCUPANCY</span><span class="sm-value" id="sm-icu">91%</span></div>
+                    <div class="sim-metric"><span class="sm-label">STAFF AVAILABILITY</span><span class="sm-value" id="sm-staff">64%</span></div>
+                    <div class="sim-metric"><span class="sm-label">RISK SCORE</span><span class="sm-value text-red" id="sm-risk">72</span></div>
+                </div>
+                <div class="sim-twin-status">
+                    <span class="sts-label">AFFECTED TWIN DEPARTMENTS</span>
+                    <div class="sts-row" id="sts-row">
+                        <span class="sts-pill" data-dep="ICU">ICU ▮▮▮</span>
+                        <span class="sts-pill" data-dep="Emergency">Emergency ▮▮▮</span>
+                        <span class="sts-pill" data-dep="General Ward">Ward ▮▮</span>
+                        <span class="sts-pill" data-dep="Staff">Staff ▮▮</span>
+                    </div>
+                </div>
+                <div class="sim-ai-analysis" id="sim-ai-analysis">
+                    <div class="ai-line"><span class="ai-badge">AI</span><span id="ai-text">Analyzing scenario parameters...</span></div>
+                </div>
+                <div class="sim-controls-row">
+                    <button class="btn btn-secondary btn-sm" id="pause-btn" onclick="togglePause()">⏸ PAUSE</button>
+                    <button class="btn btn-outline btn-sm" onclick="viewImpact()">VIEW IMPACT</button>
+                    <button class="btn btn-danger-outline btn-sm" onclick="resetSimulation()">RESET</button>
+                </div>
+                <div class="sim-impact" id="sim-impact" style="display:none">
+                    <h5 class="impact-title">WHAT MAY HAPPEN IF NO ACTION IS TAKEN?</h5>
+                    <p class="sim-result-context" id="sim-result-context"></p>
+                    <div class="sim-impact-grid" id="sim-result-metrics"></div>
+                    <p class="sim-result-explanation" id="sim-result-explanation"></p>
+                    <button class="btn btn-primary btn-block btn-lg" onclick="activateSimResponse()">VIEW RECOMMENDED PREVENTIVE ACTIONS →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ VIEW: PREVENTIVE ACTION PLAN ============ -->
+<section class="view" id="view-response">
+    <div class="view-header">
+        <div>
+            <h1 class="view-title">Recommended Preventive Action</h1>
+            <p class="view-sub">Crisis-specific preventive actions. Click an action to take it and reduce risk.</p>
+        </div>
+        <span class="view-badge" id="resp-status-badge">PLAN READY</span>
+    </div>
+
+    <div class="prevention-context glass" id="prevention-context">
+        <span class="pc-label">CURRENT PREDICTION</span>
+        <span class="pc-value" id="prevention-crisis">ICU OVERLOAD RISK</span>
+        <span class="pc-note" id="prevention-note">Take these actions to prevent ICU overload and reduce the risk level.</span>
+        <div class="pc-risk"><span>RISK BEFORE</span><b class="text-red" id="prevention-risk-before">CRITICAL</b><span class="pc-arrow">→</span><span>RISK AFTER ACTION</span><b class="text-green" id="prevention-risk-after">HIGH</b></div>
+    </div>
+
+    <div class="response-plan-grid">
+        <div class="response-action glass" data-act="1">
+            <div class="act-head">
+                <span class="act-num">1</span>
+                <span class="act-sel selected" id="act-sel-1" onclick="toggleActionSelect(1, event)" title="Select this action">✓</span>
+                <span class="act-name">Activate Backup ICU Beds</span>
+                <span class="act-pri pri-high">HIGH</span>
+            </div>
+            <div class="act-meta">
+                <span class="act-status" id="act-status-1">PENDING</span>
+                <span class="act-impact">Impact: +12 ICU beds · ICU 91%→74%</span>
+            </div>
+            <p class="act-purpose" id="act-purpose-1"></p>
+            <div class="act-progress" id="act-progress-1"><div class="act-progress-fill"></div></div>
+            <button class="btn btn-primary btn-sm btn-block" id="act-btn-1" onclick="activateAction(1)">ACTIVATE BACKUP ICU BEDS</button>
+        </div>
+        <div class="response-action glass" data-act="2">
+            <div class="act-head">
+                <span class="act-num">2</span>
+                <span class="act-sel selected" id="act-sel-2" onclick="toggleActionSelect(2, event)" title="Select this action">✓</span>
+                <span class="act-name">Redirect Non-Critical Patients</span>
+                <span class="act-pri pri-high">HIGH</span>
+            </div>
+            <div class="act-meta">
+                <span class="act-status" id="act-status-2">PENDING</span>
+                <span class="act-impact">Impact: Emergency load 88%→76%</span>
+            </div>
+            <p class="act-purpose" id="act-purpose-2"></p>
+            <div class="act-progress" id="act-progress-2"><div class="act-progress-fill"></div></div>
+            <button class="btn btn-primary btn-sm btn-block" id="act-btn-2" onclick="activateAction(2)">REDIRECT NON-CRITICAL PATIENTS</button>
+        </div>
+        <div class="response-action glass" data-act="3">
+            <div class="act-head">
+                <span class="act-num">3</span>
+                <span class="act-sel selected" id="act-sel-3" onclick="toggleActionSelect(3, event)" title="Select this action">✓</span>
+                <span class="act-name">Notify Backup Medical Staff</span>
+                <span class="act-pri pri-high">HIGH</span>
+            </div>
+            <div class="act-meta">
+                <span class="act-status" id="act-status-3">PENDING</span>
+                <span class="act-impact">Impact: Staff availability 64%→80%</span>
+            </div>
+            <p class="act-purpose" id="act-purpose-3"></p>
+            <div class="act-progress" id="act-progress-3"><div class="act-progress-fill"></div></div>
+            <button class="btn btn-primary btn-sm btn-block" id="act-btn-3" onclick="activateAction(3)">NOTIFY BACKUP STAFF</button>
+        </div>
+        <div class="response-action glass" data-act="4">
+            <div class="act-head">
+                <span class="act-num">4</span>
+                <span class="act-sel selected" id="act-sel-4" onclick="toggleActionSelect(4, event)" title="Select this action">✓</span>
+                <span class="act-name">Increase Emergency Triage Capacity</span>
+                <span class="act-pri pri-medium">MEDIUM</span>
+            </div>
+            <div class="act-meta">
+                <span class="act-status" id="act-status-4">PENDING</span>
+                <span class="act-impact">Impact: -25% triage wait time</span>
+            </div>
+            <p class="act-purpose" id="act-purpose-4"></p>
+            <div class="act-progress" id="act-progress-4"><div class="act-progress-fill"></div></div>
+            <button class="btn btn-primary btn-sm btn-block" id="act-btn-4" onclick="activateAction(4)">OPEN TRIAGE OVERFLOW AREA</button>
+        </div>
+        <div class="response-action glass" data-act="5">
+            <div class="act-head">
+                <span class="act-num">5</span>
+                <span class="act-sel selected" id="act-sel-5" onclick="toggleActionSelect(5, event)" title="Select this action">✓</span>
+                <span class="act-name">Coordinate Nearby Hospital Support</span>
+                <span class="act-pri pri-medium">MEDIUM</span>
+            </div>
+            <div class="act-meta">
+                <span class="act-status" id="act-status-5">PENDING</span>
+                <span class="act-impact">Impact: -20% local overload</span>
+            </div>
+            <p class="act-purpose" id="act-purpose-5"></p>
+            <div class="act-progress" id="act-progress-5"><div class="act-progress-fill"></div></div>
+            <button class="btn btn-primary btn-sm btn-block" id="act-btn-5" onclick="activateAction(5)">REQUEST NEARBY SUPPORT</button>
+        </div>
+        <div class="response-action glass" data-act="6">
+            <div class="act-head">
+                <span class="act-num">6</span>
+                <span class="act-sel selected" id="act-sel-6" onclick="toggleActionSelect(6, event)" title="Select this action">✓</span>
+                <span class="act-name">Activate Backup Ventilation Equipment</span>
+                <span class="act-pri pri-medium">MEDIUM</span>
+            </div>
+            <div class="act-meta">
+                <span class="act-status" id="act-status-6">PENDING</span>
+                <span class="act-impact">Impact: +18% equipment readiness</span>
+            </div>
+            <p class="act-purpose" id="act-purpose-6"></p>
+            <div class="act-progress" id="act-progress-6"><div class="act-progress-fill"></div></div>
+            <button class="btn btn-primary btn-sm btn-block" id="act-btn-6" onclick="activateAction(6)">ACTIVATE BACKUP EQUIPMENT</button>
+        </div>
+    </div>
+
+    <div class="glass impact-flow-card">
+        <div class="explain-head">
+            <span class="explain-icon">⚡</span>
+            <div>
+                <h4 class="panel-title">PREVENTIVE ACTION IMPACT FLOW</h4>
+                <p class="explain-sub">Prediction → action → result — measured improvement after the preventive plan is applied</p>
+            </div>
+        </div>
+        <div class="impact-flow">
+            <div class="imp-stage">
+                <span class="imp-tag">BEFORE ACTION</span>
+                <div class="imp-cell"><span id="lbl-occ">ICU Occupancy</span><b class="text-red" id="im-before-occ">91%</b></div>
+                <div class="imp-cell"><span id="lbl-beds">Available ICU Beds</span><b class="text-orange" id="im-before-beds">9</b></div>
+                <div class="imp-cell"><span>Risk Probability</span><b class="text-red" id="im-before-risk">89%</b></div>
+                <div class="imp-cell"><span>Risk Level</span><b class="text-red" id="im-before-level">CRITICAL</b></div>
+            </div>
+            <div class="imp-arrow main-arrow">→</div>
+            <div class="imp-stage imp-mid">
+                <span class="imp-tag">PREVENTIVE ACTION ACTIVATED</span>
+                <div class="imp-act">
+                    <span class="imp-check">✓</span>
+                    <div>
+                        <b id="im-action-name">Activate Backup ICU Beds</b>
+                        <span class="imp-status" id="im-action-status">READY</span>
+                    </div>
+                </div>
+                <div class="imp-note">Planned preventive action for the current predicted crisis</div>
+            </div>
+            <div class="imp-arrow">→</div>
+            <div class="imp-stage">
+                <span class="imp-tag">ESTIMATED IMPACT</span>
+                <div class="imp-cell"><span>Same metric</span><b class="text-green" id="im-after-occ">74%</b></div>
+                <div class="imp-cell"><span>Same metric</span><b class="text-green" id="im-after-beds">21</b></div>
+                <div class="imp-cell"><span>Risk Probability</span><b class="text-green" id="im-after-risk">54%</b></div>
+                <div class="imp-cell"><span>Risk Level</span><b class="text-green" id="im-after-level">HIGH</b></div>
+            </div>
+        </div>
+        <div class="imp-metrics">
+            <div class="im-metric"><span>RISK REDUCTION</span><b class="text-green" id="im-metric-risk">89% → 54%</b></div>
+            <div class="im-metric"><span>CAPACITY IMPROVEMENT</span><b class="text-green" id="im-metric-cap">9 → 21 beds</b></div>
+            <div class="im-metric"><span>OCCUPANCY IMPROVEMENT</span><b class="text-green" id="im-metric-occ">91% → 74%</b></div>
+        </div>
+    </div>
+
+    <div class="glass action-success" id="action-success" style="display:none">
+        <div class="as-head">
+            <span class="as-check">✓</span>
+            <div>
+                <h4 class="panel-title">PREVENTIVE ACTION ACTIVATED SUCCESSFULLY</h4>
+                <p class="explain-sub">The selected preventive actions have been applied to reduce the predicted crisis risk.</p>
+            </div>
+        </div>
+        <div class="as-actions" id="as-actions"></div>
+        <div class="as-impact">
+            <div class="imp-stage"><span class="imp-tag">BEFORE ACTION</span>
+                <div class="imp-cell"><span id="as-lbl1"></span><b class="text-red" id="as-before-occ">91%</b></div>
+                <div class="imp-cell"><span>Risk Probability</span><b class="text-red" id="as-before-risk">89%</b></div>
+                <div class="imp-cell"><span>Risk Level</span><b class="text-red" id="as-before-level">CRITICAL</b></div>
+            </div>
+            <div class="imp-arrow main-arrow">↓</div>
+            <div class="imp-stage imp-mid"><span class="imp-tag">ESTIMATED IMPACT</span>
+                <div class="imp-cell"><span id="as-lbl2"></span><b class="text-green" id="as-after-occ">74%</b></div>
+                <div class="imp-cell"><span>Risk Probability</span><b class="text-green" id="as-after-risk">54%</b></div>
+                <div class="imp-cell"><span>Risk Level</span><b class="text-green" id="as-after-level">HIGH</b></div>
+            </div>
+        </div>
+        <button class="btn btn-primary btn-lg btn-block" onclick="goToResourceOptimizer()">VIEW RESOURCE OPTIMIZATION →</button>
+    </div>
+
+    <div class="response-footer">
+        <button class="btn btn-primary btn-lg" onclick="activateAllActions()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            ACTIVATE SELECTED PREVENTIVE ACTIONS
+        </button>
+        <span class="act-progress-label" id="resp-overall">0 / 6 ACTIONS ACTIVE</span>
+    </div>
+</section>
+
+<!-- ============ VIEW: RESOURCE OPTIMIZER ============ -->
+<section class="view" id="view-resource">
+    <div class="view-header">
+        <div>
+            <h1 class="view-title">Resource Optimizer</h1>
+            <p class="view-sub">See how resources and risk improve after taking preventive actions</p>
+        </div>
+        <span class="view-badge">AI OPTIMIZER</span>
+    </div>
+
+    <div class="res-context glass">
+        <span class="rc-label">WORKFLOW CONTEXT</span>
+        <span class="rc-value" id="res-context-text">ICU Overload Risk · Critical · Optimization follows preventive actions</span>
+        <span class="rc-note">The resource improvements below reflect the selected crisis scenario and the preventive actions you activated.</span>
+    </div>
+
+    <div class="res-outer">
+        <div class="glass res-compare">
+            <h4 class="panel-title">BEFORE OPTIMIZATION</h4>
+            <div class="res-item">
+                <div class="res-row"><span>Staff on Emergency</span><span id="before-staff">12</span></div>
+                <div class="resource-bar"><div class="resource-fill fill-blue" style="width:40%"></div></div>
+            </div>
+            <div class="res-item">
+                <div class="res-row"><span>Beds in ICU</span><span id="before-beds">4</span></div>
+                <div class="resource-bar"><div class="resource-fill fill-red" style="width:20%"></div></div>
+            </div>
+            <div class="res-item">
+                <div class="res-row"><span>Equipment Utilization</span><span id="before-equip">78%</span></div>
+                <div class="resource-bar"><div class="resource-fill fill-orange" style="width:78%"></div></div>
+            </div>
+            <div class="res-item">
+                <div class="res-row"><span>Overall Efficiency</span><span id="before-eff">62%</span></div>
+                <div class="resource-bar"><div class="resource-fill fill-purple" style="width:62%"></div></div>
+            </div>
+        </div>
+
+        <div class="glass res-compare optimized-side">
+            <h4 class="panel-title">AFTER OPTIMIZATION</h4>
+            <div class="res-item">
+                <div class="res-row"><span>Staff on Emergency</span><span id="after-staff">22</span></div>
+                <div class="resource-bar"><div class="resource-fill fill-green" style="width:73%" id="af-staff-bar"></div></div>
+            </div>
+            <div class="res-item">
+                <div class="res-row"><span>Beds in ICU</span><span id="after-beds">16</span></div>
+                <div class="resource-bar"><div class="resource-fill fill-green" style="width:80%" id="af-beds-bar"></div></div>
+            </div>
+            <div class="res-item">
+                <div class="res-row"><span>Equipment Utilization</span><span id="after-equip">92%</span></div>
+                <div class="resource-bar"><div class="resource-fill fill-green" style="width:92%" id="af-equip-bar"></div></div>
+            </div>
+            <div class="res-item">
+                <div class="res-row"><span>Overall Efficiency</span><span id="after-eff">88%</span></div>
+                <div class="resource-bar"><div class="resource-fill fill-green" style="width:88%" id="af-eff-bar"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass res-impact">
+        <h4 class="panel-title">RESOURCE IMPROVEMENT</h4>
+        <div class="res-impact-grid">
+            <div class="resource-impact"><span class="ri-label">EFFICIENCY IMPROVEMENT</span><span class="ri-value text-green ri-anim" id="ri-eff">+26%</span></div>
+            <div class="resource-impact"><span class="ri-label">RISK REDUCTION</span><span class="ri-value text-green ri-anim" id="ri-risk">-18%</span></div>
+            <div class="resource-impact"><span class="ri-label">CAPACITY IMPROVEMENT</span><span class="ri-value text-green ri-anim" id="ri-cap">+30%</span></div>
+            <div class="resource-impact"><span class="ri-label">RESOURCE IMPROVEMENT</span><span class="ri-value text-green ri-anim" id="ri-res">+22%</span></div>
+        </div>
+        <button class="btn btn-primary btn-lg" onclick="runOptimization()">VIEW RESOURCE IMPROVEMENT</button>
+        <div class="opt-status" id="opt-status" style="display:none">RESOURCES OPTIMIZED — METRICS UPDATED ✓</div>
+    </div>
+
+    <div class="glass rr-card" id="rr-card" style="display:none">
+        <div class="rr-icon">🛡️</div>
+        <h3 class="rr-title">Crisis Risk Successfully Reduced</h3>
+        <p class="rr-summary">AI-recommended preventive actions and optimized resource allocation have reduced the predicted crisis risk.</p>
+        <div class="rr-comparison">
+            <div class="rr-side before">
+                <span class="rr-tag">BEFORE</span>
+                <div class="rr-big"><span class="rr-emoji">🔴</span><b id="rr-before-level">Critical Risk</b></div>
+                <span class="rr-prob" id="rr-before-prob">89% Crisis Probability</span>
+            </div>
+            <div class="rr-arrow">→</div>
+            <div class="rr-side after">
+                <span class="rr-tag">AFTER PREVENTIVE ACTIONS</span>
+                <div class="rr-big"><span class="rr-emoji">🟠</span><b id="rr-after-level">High Risk</b></div>
+                <span class="rr-prob" id="rr-after-prob">54% Crisis Probability</span>
+            </div>
+        </div>
+        <div class="rr-metrics">
+            <div class="rr-metric"><span>RISK REDUCTION</span><b id="rr-m-risk">89% → 54%</b></div>
+            <div class="rr-metric"><span>CAPACITY IMPROVEMENT</span><b id="rr-m-cap">9 → 21 beds</b></div>
+            <div class="rr-metric"><span>EFFICIENCY IMPROVEMENT</span><b id="rr-m-eff">62% → 87%</b></div>
+        </div>
+        <p class="rr-done">✓ AI HOSPITAL CRISIS TWIN workflow complete — risk reduction achieved.</p>
+    </div>
+</section>
+
+<!-- ============ VIEW: NEARBY HOSPITAL SUPPORT ============ -->
+<section class="view" id="view-support">
+    <div class="view-header">
+        <div>
+            <h1 class="view-title">Nearby Hospital Support</h1>
+            <p class="view-sub">Regional coordination network for emergency capacity sharing</p>
+        </div>
+        <span class="view-badge">NETWORK</span>
+    </div>
+
+    <div class="coord-grid">
+        <div class="coord-card glass" data-hosp="City General Hospital">
+            <div class="coord-hospital">
+                <div class="coord-avatar">CG</div>
+                <div class="coord-name-wrap"><span class="coord-name">City General Hospital</span><span class="coord-dist">2.4 km away</span></div>
+            </div>
+            <div class="coord-detail-stats">
+                <div class="cds"><span>Available Beds</span><b>34</b></div>
+                <div class="cds"><span>ICU Availability</span><b>18%</b></div>
+                <div class="cds"><span>Emergency Capacity</span><b>42%</b></div>
+                <div class="cds"><span>Suitability Score</span><b class="text-green">92/100</b></div>
+            </div>
+            <div class="coord-actions">
+                <button class="btn btn-outline btn-sm" onclick="viewHospital(this,'City General Hospital')">VIEW DETAILS</button>
+                <button class="btn btn-secondary btn-sm" onclick="requestHospitalSupport(this,'City General Hospital')">REQUEST SUPPORT</button>
+                <button class="btn btn-primary btn-sm" onclick="transferPatients(this,'City General Hospital')">TRANSFER PATIENTS</button>
+            </div>
+            <div class="coord-status" data-hospstatus="City General Hospital" style="display:none"></div>
+        </div>
+
+        <div class="coord-card glass" data-hosp="Metro Care Hospital">
+            <div class="coord-hospital">
+                <div class="coord-avatar">MC</div>
+                <div class="coord-name-wrap"><span class="coord-name">Metro Care Hospital</span><span class="coord-dist">5.1 km away</span></div>
+            </div>
+            <div class="coord-detail-stats">
+                <div class="cds"><span>Available Beds</span><b>48</b></div>
+                <div class="cds"><span>ICU Availability</span><b>26%</b></div>
+                <div class="cds"><span>Emergency Capacity</span><b>55%</b></div>
+                <div class="cds"><span>Suitability Score</span><b class="text-green">88/100</b></div>
+            </div>
+            <div class="coord-actions">
+                <button class="btn btn-outline btn-sm" onclick="viewHospital(this,'Metro Care Hospital')">VIEW DETAILS</button>
+                <button class="btn btn-secondary btn-sm" onclick="requestHospitalSupport(this,'Metro Care Hospital')">REQUEST SUPPORT</button>
+                <button class="btn btn-primary btn-sm" onclick="transferPatients(this,'Metro Care Hospital')">TRANSFER PATIENTS</button>
+            </div>
+            <div class="coord-status" data-hospstatus="Metro Care Hospital" style="display:none"></div>
+        </div>
+
+        <div class="coord-card glass" data-hosp="LifeCare Medical Center">
+            <div class="coord-hospital">
+                <div class="coord-avatar">LC</div>
+                <div class="coord-name-wrap"><span class="coord-name">LifeCare Medical Center</span><span class="coord-dist">8.6 km away</span></div>
+            </div>
+            <div class="coord-detail-stats">
+                <div class="cds"><span>Available Beds</span><b>27</b></div>
+                <div class="cds"><span>ICU Availability</span><b>12%</b></div>
+                <div class="cds"><span>Emergency Capacity</span><b>35%</b></div>
+                <div class="cds"><span>Suitability Score</span><b class="text-orange">71/100</b></div>
+            </div>
+            <div class="coord-actions">
+                <button class="btn btn-outline btn-sm" onclick="viewHospital(this,'LifeCare Medical Center')">VIEW DETAILS</button>
+                <button class="btn btn-secondary btn-sm" onclick="requestHospitalSupport(this,'LifeCare Medical Center')">REQUEST SUPPORT</button>
+                <button class="btn btn-primary btn-sm" onclick="transferPatients(this,'LifeCare Medical Center')">TRANSFER PATIENTS</button>
+            </div>
+            <div class="coord-status" data-hospstatus="LifeCare Medical Center" style="display:none"></div>
+        </div>
+    </div>
+
+    <!-- Hospital modal -->
+    <div class="modal-backdrop" id="hospital-modal" onclick="closeHospitalModal(event)">
+        <div class="modal glass" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeHospitalModal()">✕</button>
+            <h3 class="modal-title" id="hm-title">City General Hospital</h3>
+            <div class="coord-detail-stats wide">
+                <div class="cds"><span>Available Beds</span><b id="hm-beds">34</b></div>
+                <div class="cds"><span>ICU Availability</span><b id="hm-icu">18%</b></div>
+                <div class="cds"><span>Emergency Capacity</span><b id="hm-emerg">42%</b></div>
+                <div class="cds"><span>Suitability</span><b id="hm-score">92/100</b></div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary btn-sm" onclick="requestHospitalSupport(this,document.getElementById('hm-title').textContent)">REQUEST SUPPORT</button>
+                <button class="btn btn-primary btn-sm" onclick="transferPatients(this,document.getElementById('hm-title').textContent)">TRANSFER PATIENTS</button>
+                <button class="btn btn-outline btn-sm" onclick="closeHospitalModal()">CLOSE</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ VIEW: ANALYTICS ============ -->
+<section class="view" id="view-analytics">
+    <div class="view-header">
+        <div>
+            <h1 class="view-title">Analytics</h1>
+            <p class="view-sub">Patient inflow, staff availability, crisis predictions, and prevention results</p>
+        </div>
+        <span class="view-badge">ANALYTICS</span>
+    </div>
+
+    <div class="analytics-grid">
+        <div class="analytics-card glass wide trend-card">
+            <div class="trend-head">
+                <div>
+                    <h4 class="panel-title">📈 HOSPITAL RISK TREND ANALYSIS</h4>
+                    <p class="explain-sub">Historical hospital data vs AI-predicted future — live operational risk</p>
+                </div>
+                <div class="trend-metrics" id="trend-metrics">
+                    <button class="tm-btn" data-metric="icu" onclick="selectTrendMetric('icu', this)">ICU OCCUPANCY</button>
+                    <button class="tm-btn" data-metric="emergency" onclick="selectTrendMetric('emergency', this)">EMERGENCY LOAD</button>
+                    <button class="tm-btn" data-metric="staff" onclick="selectTrendMetric('staff', this)">STAFF AVAILABILITY</button>
+                    <button class="tm-btn active" data-metric="overall" onclick="selectTrendMetric('overall', this)">OVERALL HOSPITAL RISK</button>
+                </div>
+            </div>
+            <div class="chart-wrap"><canvas id="chart-trend"></canvas></div>
+            <div class="trend-legend">
+                <span class="tl-item"><i class="tl-dot hist"></i>HISTORICAL DATA</span>
+                <span class="tl-item"><i class="tl-dot now"></i>CURRENT</span>
+                <span class="tl-item"><i class="tl-dot pred"></i>AI PREDICTED FUTURE</span>
+            </div>
+        </div>
+        <div class="analytics-card glass"><h4 class="panel-title">PATIENT INFLOW</h4><div class="chart-wrap"><canvas id="chart-capacity"></canvas></div></div>
+        <div class="analytics-card glass"><h4 class="panel-title">RISK TREND</h4><div class="chart-wrap"><canvas id="chart-risk-trend"></canvas></div></div>
+        <div class="analytics-card glass"><h4 class="panel-title">CRISIS PREDICTIONS</h4><div class="chart-wrap"><canvas id="chart-alerts"></canvas></div></div>
+        <div class="analytics-card glass"><h4 class="panel-title">CRISIS IMPACT IF NOT PREVENTED</h4><div class="chart-wrap"><canvas id="chart-crisis"></canvas></div></div>
+        <div class="analytics-card glass wide"><h4 class="panel-title">BEFORE VS AFTER PREVENTION</h4><div class="chart-wrap"><canvas id="chart-beforeafter"></canvas></div></div>
+    </div>
+</section>
+
+<!-- ============ VIEW: PREVENTION STATUS ============ -->
+<section class="view" id="view-command">
+    <div class="view-header">
+        <div>
+            <h1 class="view-title">Prevention Status</h1>
+            <p class="view-sub">Select a system state for prevention monitoring</p>
+        </div>
+        <span class="view-badge" id="cmd-mode-badge">MODE: ACTIVE</span>
+    </div>
+
+    <div class="command-mode-selector">
+        <button class="mode-btn active" data-mode="ACTIVE" onclick="setCommandMode('ACTIVE', this)">
+            <span class="mode-icon">●</span>
+            <span class="mode-name">ACTIVE</span>
+            <span class="mode-desc">Prevention monitoring active</span>
+        </button>
+        <button class="mode-btn" data-mode="CRITICAL" onclick="setCommandMode('CRITICAL', this)">
+            <span class="mode-icon red">●</span>
+            <span class="mode-name">CRITICAL</span>
+            <span class="mode-desc">Crisis alert state</span>
+        </button>
+        <button class="mode-btn" data-mode="READY" onclick="setCommandMode('READY', this)">
+            <span class="mode-icon green">●</span>
+            <span class="mode-name">READY</span>
+            <span class="mode-desc">Stable / recovery state</span>
+        </button>
+    </div>
+
+    <div class="command-status-panel glass" id="command-panel">
+        <h2 class="command-center-title" id="cmd-center-title">PREVENTION SYSTEM — ACTIVE</h2>
+        <div class="command-grid">
+            <div class="command-item"><span class="cmd-label">DIGITAL TWIN</span><span class="cmd-value cmd-active" id="c-twin"><span class="cmd-dot"></span>ACTIVE</span></div>
+            <div class="command-item"><span class="cmd-label">CURRENT RISK</span><span class="cmd-value text-orange" id="c-risk">HIGH</span></div>
+            <div class="command-item"><span class="cmd-label">AI PREDICTION</span><span class="cmd-value text-green" id="c-pred">READY</span></div>
+            <div class="command-item"><span class="cmd-label">PREVENTION PLAN</span><span class="cmd-value text-green" id="c-resp">READY</span></div>
+            <div class="command-item"><span class="cmd-label">SYSTEM STATUS</span><span class="cmd-value text-green" id="c-sys">OPERATIONAL</span></div>
+        </div>
+    </div>
+
+    <div class="cmd-alerts" id="cmd-alerts"></div>
+</section>
+
+</main>
+
+<!-- ==================== TOASTS ==================== -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ==================== AI OVERLAY ==================== -->
+<div class="overlay" id="overlay">
+    <div class="overlay-content">
+        <div class="overlay-spinner"></div>
+        <h3 class="overlay-title">AI HOSPITAL CRISIS TWIN — AI ANALYSIS</h3>
+        <p class="overlay-step" id="overlay-step">Analyzing...</p>
+        <div class="overlay-bar"><div class="overlay-bar-fill" id="overlay-bar"></div></div>
+    </div>
+</div>
+
+<!-- ==================== ACTION CONFIRMATION ==================== -->
+<div class="confirm-overlay" id="confirm-overlay">
+    <div class="confirm-box">
+        <h3 class="confirm-title" id="confirm-title">ACTIVATE BACKUP ICU BEDS?</h3>
+        <p class="confirm-msg" id="confirm-msg">Activate 12 Backup ICU Beds? ICU occupancy will drop from 91% to 74%.</p>
+        <div class="confirm-actions">
+            <button class="btn btn-outline" onclick="window.app.cancelAction()">CANCEL</button>
+            <button class="btn btn-primary" onclick="window.app.confirmAction()">CONFIRM ACTION</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MOBILE OVERLAY MENU ==================== -->
+<div class="mobile-menu-overlay" id="mobile-menu-overlay" onclick="toggleMobileNav()">
+    <nav class="mobile-menu-nav" onclick="event.stopPropagation()">
+        <button class="side-item active" data-view="dashboard" onclick="go('dashboard')">Hospital Crisis Overview</button>
+        <button class="side-item" data-view="monitor" onclick="go('monitor')">Live Hospital Monitor</button>
+        <button class="side-item" data-view="twin" onclick="go('twin')">Digital Twin</button>
+        <button class="side-item" data-view="warning" onclick="go('warning')">Early Warning Center</button>
+        <button class="side-item" data-view="predict" onclick="go('predict')">AI Crisis Prediction</button>
+        <button class="side-item" data-view="simulator" onclick="go('simulator')">Crisis Simulator</button>
+        <button class="side-item" data-view="response" onclick="go('response')">Preventive Action Plan</button>
+        <button class="side-item" data-view="resource" onclick="go('resource')">Resource Optimizer</button>
+        <button class="side-item" data-view="support" onclick="go('support')">Nearby Hospital Support</button>
+        <button class="side-item" data-view="analytics" onclick="go('analytics')">Analytics</button>
+        <button class="side-item" data-view="command" onclick="go('command')">Prevention Status</button>
+    </nav>
+</div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
