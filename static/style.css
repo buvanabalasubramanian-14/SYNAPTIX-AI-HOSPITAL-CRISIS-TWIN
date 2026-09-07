@@ -606,14 +606,20 @@ body {
 
 @media (max-width: 900px) {
     .sidebar { display: none; }
-    .main { margin-left: 0; padding: calc(var(--topbar-h) + 20px) 18px 48px; }
-    .mobile-topnav { display: flex; align-items: center; gap: 12px; }
+    .main { margin-left: 0; padding: calc(var(--topbar-h) + 56px) 18px 48px; }
+    .mobile-topnav {
+        position: fixed; top: var(--topbar-h); left: 0; right: 0; height: 40px; z-index: 999;
+        display: flex; align-items: center; gap: 10px; padding: 0 12px;
+        background: rgba(5, 10, 24, 0.95);
+        backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--border);
+    }
     .mobile-menu-overlay { position: fixed; inset: 0; background: rgba(4,7,15,0.8); backdrop-filter: blur(6px); z-index: 2000; display: none; }
     .mobile-menu-overlay.show { display: flex; }
-    .mobile-menu-nav { position: absolute; top: 0; left: 0; bottom: 0; width: 260px; background: rgba(5,10,24,0.97); border-right: 1px solid var(--border); padding: 24px 16px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
-    .mobile-menu-nav .side-item { font-size: 13px; }
-    .mobile-menu-btn { background: rgba(70,120,220,0.1); border: 1px solid var(--border); color: var(--text-primary); width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 18px; }
-    .mobile-title { flex: 1; font-weight: 800; letter-spacing: 2px; }
+    .mobile-menu-nav { position: absolute; top: 0; left: 0; bottom: 0; width: 260px; background: rgba(5,10,24,0.97); border-right: 1px solid var(--border); padding: calc(var(--topbar-h) + 44px) 16px 24px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
+    .mobile-menu-nav .side-item { font-size: 13px; padding: 13px 14px; }
+    .mobile-menu-btn { background: rgba(70,120,220,0.1); border: 1px solid var(--border); color: var(--text-primary); width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 18px; flex-shrink: 0; }
+    .mobile-title { flex: 1; font-weight: 800; letter-spacing: 2px; min-width: 0; }
     .topbar-mode { display: none; }
     .dashboard-bottom { grid-template-columns: 1fr; }
     .response-plan-grid { grid-template-columns: 1fr; }
@@ -860,7 +866,7 @@ body {
     .as-impact { grid-template-columns: 1fr; }
     .as-impact .imp-arrow { transform: none; padding: 2px 0; }
     .rr-metrics { grid-template-columns: 1fr; }
-    .wf-progress { top: calc(var(--topbar-h) - 8px); }
+    .wf-progress { top: calc(var(--topbar-h) + 48px); }
 }
 
 /* ==================== AUTHORIZED ACCESS GATE (LOGIN) ==================== */
@@ -973,4 +979,122 @@ body:not(.login-mode) .login-screen { display: none; }
     .user-chip-meta .user-chip-id { display: none; }
     .user-chip { padding: 5px 6px 5px 10px; }
     .user-logout { padding: 6px 10px; }
+}
+
+/* ==================== MOBILE RESPONSIVENESS (BELOW 768px) ==================== */
+@media (max-width: 767px) {
+    /* Fluid main content clearing the fixed topbar + mobile nav */
+    .main { margin-left: 0; padding: calc(var(--topbar-h) + 54px) 16px 48px; }
+
+    /* Topbar: compact brand + identity chip, no overflow */
+    .topbar { padding: 0 14px; gap: 10px; }
+    .logo-wrap { gap: 8px; }
+    .logo-mark { width: 34px; height: 34px; }
+    .logo-mark svg { width: 18px; height: 18px; }
+    .logo-name { font-size: 13px; letter-spacing: 1.5px; }
+    .topbar-right { gap: 10px; }
+    .live-indicator { padding: 5px 9px; gap: 6px; }
+    .live-text { display: none; }
+    .user-chip { gap: 8px; padding: 5px 6px 5px 10px; }
+    .user-chip-label { font-size: 8px; }
+
+    /* Mobile nav title must never overflow the bar */
+    .mobile-topnav { gap: 8px; padding: 0 10px; }
+    .mobile-title { font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Page headers wrap instead of overflowing */
+    .view-header { flex-wrap: wrap; gap: 12px; }
+    .view-header .view-time, .view-header .view-badge { align-self: flex-start; }
+    .view-title { font-size: 23px; }
+    .view-sub { font-size: 12.5px; }
+
+    /* Cards stack vertically */
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .monitor-grid { grid-template-columns: 1fr; }
+    .coord-grid { grid-template-columns: 1fr; }
+    .dashboard-actions .btn { width: 100%; }
+
+    /* Prediction + simulator metric grids refit */
+    .predict-metrics { grid-template-columns: repeat(2, 1fr); }
+    .sim-stage { min-height: 0; padding: 20px; }
+    .sim-impact-grid { grid-template-columns: repeat(2, 1fr); }
+    .intensity-selector { flex-wrap: wrap; }
+    .intensity-option { flex: 1 1 40%; }
+
+    /* Preventive action cards: headers and meta wrap cleanly */
+    .act-head { flex-wrap: wrap; row-gap: 8px; }
+    .act-meta { flex-wrap: wrap; row-gap: 6px; }
+    .response-footer { flex-direction: column; align-items: stretch; }
+    .response-footer .btn { width: 100%; }
+
+    /* Resource optimizer context strip */
+    .res-context { gap: 10px; }
+    .rc-value { min-width: 0; }
+
+    /* Nearby hospital support cards */
+    .coord-actions { grid-template-columns: 1fr 1fr; }
+    .coord-actions .btn:nth-child(3) { grid-column: 1 / -1; }
+    .modal-risk-row { flex-wrap: wrap; gap: 8px; }
+
+    /* Digital twin: refit map cells and unsticky detail panel */
+    .twin-map { grid-template-columns: repeat(2, 1fr); min-height: 0; padding: 14px; gap: 12px; }
+    .twin-corridor-h, .twin-corridor-v { display: none; }
+    .twin-unit { padding: 12px; }
+    .twin-unit-head span:first-child { font-size: 11px; }
+    .twin-detail { position: static; padding: 20px; }
+
+    /* Modals, overlays and confirm dialogs fit the viewport */
+    .modal { width: 94%; padding: 24px 20px; }
+    .modal-stats { gap: 8px; }
+    .modal-stat { padding: 10px 6px; }
+    .confirm-box { width: 94%; padding: 24px 18px; }
+    .confirm-actions { flex-direction: column; }
+    .confirm-actions .btn { width: 100%; }
+    .overlay-content { width: 94%; padding: 28px 18px; }
+
+    /* Login page fits without overflow */
+    .login-title { font-size: 22px; letter-spacing: 2px; }
+    .login-logo { width: 52px; height: 52px; }
+    .login-card { padding: 24px 18px 18px; }
+}
+
+/* ==================== COMPACT PHONES (BELOW 600px) ==================== */
+@media (max-width: 599px) {
+    .main { padding: calc(var(--topbar-h) + 52px) 14px 44px; }
+
+    /* Topbar: drop non-essential items so nothing overflows */
+    .topbar-right { gap: 8px; }
+    .live-indicator { display: none; }
+    .user-chip-meta { display: none; }
+    .user-chip { padding: 4px; }
+    .logo-sub { display: none; }
+    .logo-name { font-size: 12px; letter-spacing: 1px; }
+
+    /* Full-width, comfortable touch targets */
+    .dashboard-actions { flex-direction: column; gap: 10px; }
+    .dashboard-actions .btn { font-size: 13px; padding: 14px 18px; }
+    .warning-actions { flex-direction: column; align-items: stretch; }
+    .warning-actions .btn { width: 100%; }
+    .sim-controls-row { flex-direction: column; align-items: stretch; }
+    .sim-controls-row .btn { width: 100%; }
+    .res-impact .btn { width: 100%; }
+    .intensity-selector { display: grid; grid-template-columns: 1fr 1fr; }
+    .command-grid { grid-template-columns: 1fr; }
+    .coord-actions { grid-template-columns: 1fr; }
+    .modal-stats { padding: 8px; }
+    .modal-actions { flex-direction: column; }
+    .modal-actions .btn { width: 100%; }
+
+    /* Oversized type scales down so text never overflows */
+    .predict-crisis { font-size: 26px; }
+    .command-center-title { font-size: 18px; }
+
+    /* Compact login card */
+    .login-title { font-size: 18px; letter-spacing: 1px; }
+    .login-sub { font-size: 11px; }
+    .login-brand, .login-caption { font-size: 10px; }
+    .login-badge { font-size: 9px; letter-spacing: 1px; padding: 6px 10px; }
+    .login-input { padding: 12px 12px; font-size: 13px; }
+    .login-card { padding: 22px 14px 16px; }
+    .login-screen { padding: 12px; }
 }
