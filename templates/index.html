@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=3">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body class="login-mode">
@@ -311,7 +311,7 @@
 </section>
 
 <!-- ============ VIEW: LIVE HOSPITAL MONITOR ============ -->
-<section class="view" id="view-monitor">
+<section class="view" hidden id="view-monitor">
     <div class="view-header">
         <div>
             <h1 class="view-title">Live Hospital Monitor</h1>
@@ -391,7 +391,7 @@
 </section>
 
 <!-- ============ VIEW: DIGITAL TWIN ============ -->
-<section class="view" id="view-twin">
+<section class="view" hidden id="view-twin">
     <div class="view-header">
         <div>
             <h1 class="view-title">Live Hospital Digital Twin</h1>
@@ -483,7 +483,7 @@
             <div class="twin-impacts" id="twin-impacts"></div>
         </div>
 </section>
-<section class="view" id="view-warning">
+<section class="view" hidden id="view-warning">
     <div class="view-header">
         <div>
             <h1 class="view-title">Early Warning Center</h1>
@@ -625,7 +625,7 @@
 </section>
 
 <!-- ============ VIEW: AI CRISIS PREDICTION ============ -->
-<section class="view" id="view-predict">
+<section class="view" hidden id="view-predict">
     <div class="view-header">
         <div>
             <h1 class="view-title">AI Risk Prediction</h1>
@@ -760,7 +760,7 @@
 </section>
 
 <!-- ============ VIEW: CRISIS SIMULATOR ============ -->
-<section class="view" id="view-simulator">
+<section class="view" hidden id="view-simulator">
     <div class="view-header">
         <div>
             <h1 class="view-title">Crisis Simulator</h1>
@@ -852,7 +852,7 @@
 </section>
 
 <!-- ============ VIEW: PREVENTIVE ACTION PLAN ============ -->
-<section class="view" id="view-response">
+<section class="view" hidden id="view-response">
     <div class="view-header">
         <div>
             <h1 class="view-title">Recommended Preventive Action</h1>
@@ -1043,7 +1043,7 @@
 </section>
 
 <!-- ============ VIEW: RESOURCE OPTIMIZER ============ -->
-<section class="view" id="view-resource">
+<section class="view" hidden id="view-resource">
     <div class="view-header">
         <div>
             <h1 class="view-title">Resource Optimizer</h1>
@@ -1139,7 +1139,7 @@
 </section>
 
 <!-- ============ VIEW: NEARBY HOSPITAL SUPPORT ============ -->
-<section class="view" id="view-support">
+<section class="view" hidden id="view-support">
     <div class="view-header">
         <div>
             <h1 class="view-title">Nearby Hospital Support</h1>
@@ -1228,7 +1228,7 @@
 </section>
 
 <!-- ============ VIEW: ANALYTICS ============ -->
-<section class="view" id="view-analytics">
+<section class="view" hidden id="view-analytics">
     <div class="view-header">
         <div>
             <h1 class="view-title">Analytics</h1>
@@ -1267,7 +1267,7 @@
 </section>
 
 <!-- ============ VIEW: PREVENTION STATUS ============ -->
-<section class="view" id="view-command">
+<section class="view" hidden id="view-command">
     <div class="view-header">
         <div>
             <h1 class="view-title">Prevention Status</h1>
@@ -1357,6 +1357,6 @@
     </nav>
 </div>
 
-<script src="{{ url_for('static', filename='app.js') }}"></script>
+<script src="{{ url_for('static', filename='app.js') }}?v=3"></script>
 </body>
 </html>

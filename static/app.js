@@ -8,6 +8,11 @@ document.addEventListener("DOMContentLoaded", function () {
     initClock();
     initCharts();
 
+    // Enforce strict page isolation: exactly ONE view visible at any time.
+    document.querySelectorAll(".view").forEach(function (v) {
+        v.hidden = !v.classList.contains("active");
+    });
+
     // Mobile app-style screens: collapse secondary blocks so each feature
     // opens as a focused, scannable screen instead of one long page.
     if (window.matchMedia && window.matchMedia("(max-width: 767px)").matches) {
@@ -33,10 +38,14 @@ function go(view) {
     // Hide all views
     document.querySelectorAll(".view").forEach(function (v) {
         v.classList.remove("active");
+        v.hidden = true;
     });
     // Show the target view
     const target = document.getElementById("view-" + view);
-    if (target) target.classList.add("active");
+    if (target) {
+        target.classList.add("active");
+        target.hidden = false;
+    }
 
     // Update sidebar active
     document.querySelectorAll(".side-item[data-view]").forEach(function (item) {
