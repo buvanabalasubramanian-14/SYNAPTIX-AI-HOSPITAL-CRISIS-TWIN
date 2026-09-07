@@ -143,9 +143,10 @@
 
 <!-- mobile topbar nav -->
 <nav class="mobile-topnav">
-    <button class="mobile-menu-btn" onclick="toggleMobileNav()">☰</button>
+    <button class="mobile-menu-btn" onclick="toggleMobileNav()" title="MENU">☰</button>
     <div class="mobile-title"><span class="mt-label">AI HOSPITAL CRISIS TWIN</span><span class="mt-main" id="mobile-title-main">Dashboard</span></div>
-    <button class="side-item" data-view="dashboard" onclick="go('dashboard')">⌂</button>
+    <button class="mobile-top-btn" data-view="dashboard" onclick="go('dashboard')" title="Dashboard">⌂</button>
+    <button class="mobile-top-btn" onclick="logoutUser()" title="LOG OUT"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
 </nav>
 
 <!-- ==================== MAIN CONTENT (VIEWS) ==================== -->

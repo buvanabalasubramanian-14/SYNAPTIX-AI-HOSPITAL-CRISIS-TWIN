@@ -641,6 +641,9 @@ body {
     .mobile-menu-nav .side-item + .side-item { margin-top: 4px; }
     .mobile-menu-foot { margin-top: auto; padding: 20px 18px 6px; font-size: 10px; font-weight: 600; letter-spacing: 1.5px; color: var(--text-muted); line-height: 1.7; border-top: 1px solid var(--border); }
     .mobile-menu-btn { background: rgba(70,120,220,0.1); border: 1px solid var(--border); color: var(--text-primary); width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 18px; flex-shrink: 0; }
+    .mobile-top-btn { background: rgba(70,120,220,0.1); border: 1px solid var(--border); color: var(--text-primary); width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 17px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; }
+    .mobile-top-btn svg { width: 16px; height: 16px; }
+    .mobile-top-btn:active, .mobile-menu-btn:active { background: rgba(70,120,220,0.22); }
     .mobile-title { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; line-height: 1.15; text-align: center; }
     .mt-label { font-size: 7px; font-weight: 700; letter-spacing: 2px; color: var(--text-muted); text-transform: uppercase; white-space: nowrap; }
     .mt-main { font-size: 12px; font-weight: 800; letter-spacing: 1px; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
@@ -1027,8 +1030,31 @@ body:not(.login-mode) .login-screen { display: none; }
     /* Mobile nav title must never overflow the bar */
     .mobile-topnav { gap: 8px; padding: 0 10px; }
 
+    /* Collapse the two stacked headers (62px topbar + 40px nav) into ONE compact
+       50px app bar, so page content starts much higher on screen. */
+    .topbar { position: absolute !important; height: 0 !important; overflow: hidden; padding: 0; border: none; z-index: -1; }
+    .mobile-topnav { top: 0; height: 50px; z-index: 1000; }
+    .mobile-topnav .mobile-menu-btn,
+    .mobile-topnav .mobile-top-btn { width: 38px; height: 38px; }
+    .mobile-title { gap: 1px; }
+    .mt-label { font-size: 7.5px; letter-spacing: 1.6px; }
+    .mt-main { font-size: 13px; letter-spacing: 0.8px; }
+    .main { padding: calc(50px + env(safe-area-inset-top, 0px)) 14px calc(44px + env(safe-area-inset-bottom, 0px)) !important; }
+
     /* Focused app-screen: single-column prediction detail */
     .predict-logic-grid { grid-template-columns: 1fr; gap: 14px; margin-top: 14px; }
+
+    /* Workflow steps become a compact swipeable horizontal stepper instead of
+       a tall vertical box full of stacked pills (minimal screen space). */
+    .wf-progress {
+        top: 50px; z-index: 20; flex-wrap: nowrap; overflow-x: auto;
+        padding: 8px 10px; margin-bottom: 14px; gap: 8px;
+        -webkit-overflow-scrolling: touch; scrollbar-width: none;
+    }
+    .wf-progress::-webkit-scrollbar { display: none; }
+    .wf-progress .wfp-step { flex: 0 0 auto; padding: 6px 11px; font-size: 9.5px; }
+    .wf-progress .wfp-arrow { flex: 0 0 auto; font-size: 12px; }
+    .wf-progress .wfp-num { display: none; }
 
     /* App-like compact card surfaces (mobile only) */
     .view-header { margin-bottom: 16px; }
@@ -1116,6 +1142,31 @@ body:not(.login-mode) .login-screen { display: none; }
     .response-footer { flex-direction: column; align-items: stretch; }
     .response-footer .btn { width: 100%; }
 
+    /* Preventive Action Plan: compact single-row summary instead of stacked
+       huge desktop cards, and compact action cards with balanced rows. */
+    #view-response { display: flex; flex-direction: column; }
+    #view-response .prevention-context {
+        flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px 12px;
+        padding: 12px 14px; margin-bottom: 14px;
+    }
+    #view-response .pc-label { display: none; }
+    #view-response .pc-value { flex: 1 1 auto; font-size: 16px; }
+    #view-response .pc-note { flex: 1 1 100%; font-size: 11.5px; }
+    #view-response .pc-risk { margin-left: auto; gap: 6px; font-size: 11px; }
+    #view-response .response-plan-grid { order: 1; display: flex; flex-direction: column; gap: 10px; }
+    #view-response .response-action { padding: 12px 14px; }
+    #view-response .act-head { margin-bottom: 8px; gap: 9px; }
+    #view-response .act-num { width: 24px; height: 24px; font-size: 12px; flex-shrink: 0; }
+    #view-response .act-name { font-size: 13px; line-height: 1.25; }
+    #view-response .act-meta { justify-content: flex-start; flex-wrap: wrap; gap: 6px 12px; margin-bottom: 0; }
+    #view-response .act-status { display: inline; padding: 5px 10px; font-size: 10px; }
+    #view-response .act-impact { font-size: 11px; margin-left: auto; }
+    #view-response .act-progress { order: 3; margin: 8px 0 4px; }
+    #view-response .act-target { flex: 1 0 auto; order: 4; margin-top: 8px; min-width: 0; }
+    #view-response .act-target .btn { width: auto; font-size: 11px; padding: 8px 14px; }
+    #view-response .action-success { margin-top: 14px; padding: 16px 14px; }
+    #view-response .response-footer { order: 2; margin-top: 2px; }
+
     /* Resource optimizer context strip */
     .res-context { gap: 10px; }
     .rc-value { min-width: 0; }
@@ -1184,17 +1235,13 @@ body:not(.login-mode) .login-screen { display: none; }
 
 /* ==================== COMPACT PHONES (BELOW 600px) ==================== */
 @media (max-width: 599px) {
-    .main { padding: calc(var(--topbar-h) + 52px) 14px 44px; }
+    .main { padding: calc(50px + env(safe-area-inset-top, 0px)) 14px calc(44px + env(safe-area-inset-bottom, 0px)) !important; }
 
-    /* Topbar: drop non-essential items so nothing overflows */
-    .topbar-right { gap: 8px; }
-    .live-indicator { display: none; }
-    .user-chip-meta { display: none; }
-    .user-chip { padding: 4px; }
+    /* Topbar already collapsed into the 50px app bar: main clears only that bar */
     .logo-sub { display: none; }
     .logo-name { font-size: 12px; letter-spacing: 1px; }
 
-    /* Full-width, comfortable touch targets */
+    /* Compact phones: full-width, comfortable touch targets */
     .dashboard-actions { flex-direction: column; gap: 10px; }
     .dashboard-actions .btn { font-size: 13px; padding: 14px 18px; }
     .warning-actions { flex-direction: column; align-items: stretch; }
