@@ -1040,8 +1040,18 @@ body:not(.login-mode) .login-screen { display: none; }
     .dashboard-bottom > .glass, .analytics-grid > .glass { padding: 16px 14px; }
 
     /* Compact dashboard monitor cards: width-balanced, short, scannable */
-    .dashboard-grid { gap: 12px; margin-bottom: 14px; }
-    .health-score-card, .dash-kpi-card { padding: 14px 14px; min-height: 0; }
+    /* Mobile dashboard: primary status card + balanced 2-column metric grid */
+    #view-dashboard { display: flex; flex-direction: column; }
+    .dashboard-grid { order: 1; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px; }
+    .health-score-card { grid-column: 1 / -1; padding: 16px 16px; min-height: 0; }
+    .health-score-card .hs-score { font-size: 38px; }
+    .dash-kpi-card { padding: 14px 14px; min-height: 0; }
+    .dash-kpi-card:last-child { grid-column: 1 / -1; }
+    .overview-prediction { order: 2; margin-bottom: 14px; }
+    .dashboard-actions { order: 3; margin-bottom: 18px; }
+    .dashboard-bottom { order: 4; }
+    .overview-intro, .workflow-strip { order: 5; }
+    #view-dashboard details.mob-fold { order: 6; }
     .hs-label { margin-bottom: 8px; font-size: 9px; }
     .hs-score { font-size: 34px; margin-bottom: 8px; }
     .hs-bar { height: 7px; margin-bottom: 8px; }
@@ -1086,6 +1096,11 @@ body:not(.login-mode) .login-screen { display: none; }
     .command-status-panel { padding: 26px 18px; }
     .toast { min-width: 0; max-width: calc(100vw - 32px); }
     .chart-wrap canvas { max-width: 100%; }
+
+    /* Mobile analytics: one readable full-width chart per row */
+    .analytics-grid { gap: 14px; }
+    .analytics-card { padding: 16px 12px; }
+    .chart-wrap { height: 250px; }
 
     /* Prediction + simulator metric grids refit */
     .predict-metrics { grid-template-columns: repeat(2, 1fr); }
