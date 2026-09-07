@@ -142,7 +142,8 @@ body {
 
 /* ==================== VIEWS (SPA) ==================== */
 .view { display: none; }
-.view.active { display: block; animation: viewIn 0.35s ease; }
+    .view.active { display: block; animation: viewIn 0.35s ease; contain: layout paint; }
+    .view:not(.active) { display: none !important; }
 @keyframes viewIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 
 .view-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 26px; }
@@ -639,11 +640,15 @@ body {
     .mobile-menu-nav .side-item + .side-item { margin-top: 4px; }
     .mobile-menu-foot { margin-top: auto; padding: 20px 18px 6px; font-size: 10px; font-weight: 600; letter-spacing: 1.5px; color: var(--text-muted); line-height: 1.7; border-top: 1px solid var(--border); }
     .mobile-menu-btn { background: rgba(70,120,220,0.1); border: 1px solid var(--border); color: var(--text-primary); width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 18px; flex-shrink: 0; }
-    .mobile-title { flex: 1; font-weight: 800; letter-spacing: 2px; min-width: 0; }
+    .mobile-title { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; line-height: 1.15; text-align: center; }
+    .mt-label { font-size: 7px; font-weight: 700; letter-spacing: 2px; color: var(--text-muted); text-transform: uppercase; white-space: nowrap; }
+    .mt-main { font-size: 12px; font-weight: 800; letter-spacing: 1px; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
     .topbar-mode { display: none; }
     .dashboard-bottom { grid-template-columns: 1fr; }
     .response-plan-grid { grid-template-columns: 1fr; }
     .res-outer { grid-template-columns: 1fr; }
+    .predict-layout { grid-template-columns: 1fr; gap: 14px; }
+    .sim-outer { grid-template-columns: 1fr; gap: 14px; }
     .command-mode-selector { grid-template-columns: 1fr; }
     .command-grid { grid-template-columns: repeat(2,1fr); }
     .analytics-grid { grid-template-columns: 1fr; }
@@ -1020,7 +1025,33 @@ body:not(.login-mode) .login-screen { display: none; }
 
     /* Mobile nav title must never overflow the bar */
     .mobile-topnav { gap: 8px; padding: 0 10px; }
-    .mobile-title { font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Focused app-screen: single-column prediction detail */
+    .predict-logic-grid { grid-template-columns: 1fr; gap: 14px; margin-top: 14px; }
+
+    /* App-like compact card surfaces (mobile only) */
+    .view-header { margin-bottom: 16px; }
+    .view-title { font-size: 21px; line-height: 1.2; }
+    .view-sub { font-size: 12px; margin-top: 4px; line-height: 1.5; }
+    .glass { border-radius: 14px; }
+    .panel-title { font-size: 13px; }
+    .dashboard-grid > .glass, .monitor-grid > .glass, .coord-grid > .glass,
+    .dashboard-bottom > .glass, .analytics-grid > .glass { padding: 16px 14px; }
+    .predict-logic-grid > .glass { padding: 16px 14px; }
+    .predict-layout > .glass, .sim-outer > .glass, .res-outer > .glass { padding: 18px 16px; }
+    .response-plan-grid > .glass { padding: 16px 14px; }
+    .res-impact, .action-success, .rr-card, .core-flow-card, .impact-flow-card { padding: 18px 16px; }
+    .res-context, .prevention-context { padding: 14px 14px; }
+    .core-flow-card { margin-bottom: 16px; }
+    .overview-intro { padding: 14px 16px; margin-bottom: 14px; }
+    .overview-prediction { padding: 16px; gap: 14px; margin-bottom: 14px; }
+    .dashboard-grid, .monitor-grid, .coord-grid, .response-plan-grid { gap: 14px; }
+    .dashboard-bottom { gap: 14px; }
+    .explain-card, .logic-card { gap: 12px; }
+    .res-impact-grid, .sim-metrics, .sim-impact-grid { gap: 10px; }
+    .sim-metric, .resource-impact, .im-metric { padding: 10px 8px; }
+    .scenario-grid { gap: 8px; }
+    .impact-flow, .rr-comparison { gap: 12px; }
 
     /* Page headers wrap instead of overflowing */
     .view-header { flex-wrap: wrap; gap: 12px; }
@@ -1087,6 +1118,28 @@ body:not(.login-mode) .login-screen { display: none; }
     }
     .mobile-menu-btn { width: 40px; height: 40px; }
     .side-item, .btn, button { -webkit-tap-highlight-color: transparent; }
+
+    /* Progressive disclosure: secondary blocks become tappable folded panels */
+    .mob-fold { display: block; margin: 0 0 14px; }
+    .mob-fold > summary {
+        list-style: none; cursor: pointer; user-select: none; -webkit-user-select: none;
+        display: flex; align-items: center; justify-content: space-between; gap: 8px;
+        padding: 14px 12px; font-size: 11px; font-weight: 800; letter-spacing: 1.5px;
+        color: var(--cyan-bright); background: rgba(10, 18, 40, 0.6);
+        border: 1px solid var(--border); border-radius: 12px;
+    }
+    .mob-fold > summary::-webkit-details-marker { display: none; }
+    .mob-fold > summary::after { content: "＋"; color: var(--text-muted); font-size: 16px; font-weight: 700; line-height: 1; }
+    .mob-fold[open] > summary { border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom-color: transparent; }
+    .mob-fold[open] > summary::after { content: "－"; }
+    .mob-fold > :not(summary) { margin-top: 10px; }
+    .mob-fold > .glass { background: none; border: none; box-shadow: none; padding: 4px 2px; }
+}
+
+/* Desktop always shows folded-blocks fully expanded (visual layout unchanged) */
+@media (min-width: 768px) {
+    .mob-fold[open] > summary { display: none; }
+    .mob-fold:not([open]) > :not(summary) { display: block !important; }
 }
 
 /* ==================== COMPACT PHONES (BELOW 600px) ==================== */

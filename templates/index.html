@@ -144,7 +144,7 @@
 <!-- mobile topbar nav -->
 <nav class="mobile-topnav">
     <button class="mobile-menu-btn" onclick="toggleMobileNav()">☰</button>
-    <span class="mobile-title">AI HOSPITAL CRISIS TWIN</span>
+    <div class="mobile-title"><span class="mt-label">AI HOSPITAL CRISIS TWIN</span><span class="mt-main" id="mobile-title-main">Dashboard</span></div>
     <button class="side-item" data-view="dashboard" onclick="go('dashboard')">⌂</button>
 </nav>
 
@@ -694,6 +694,8 @@
         </div>
     </div>
 
+    <details class="mob-fold" open>
+    <summary>🤖 EXPLAINABLE AI + PREDICTION LOGIC</summary>
     <div class="predict-logic-grid">
         <div class="glass explain-card">
             <div class="explain-head">
@@ -754,6 +756,7 @@
             </div>
         </div>
     </div>
+</details>
 </section>
 
 <!-- ============ VIEW: CRISIS SIMULATOR ============ -->
@@ -958,9 +961,11 @@
         </div>
     </div>
 
-    <div class="glass impact-flow-card">
-        <div class="explain-head">
-            <span class="explain-icon">⚡</span>
+    <details class="mob-fold" open>
+        <summary>⚡ PREVENTIVE ACTION IMPACT FLOW</summary>
+        <div class="glass impact-flow-card">
+            <div class="explain-head">
+                <span class="explain-icon">⚡</span>
             <div>
                 <h4 class="panel-title">PREVENTIVE ACTION IMPACT FLOW</h4>
                 <p class="explain-sub">Prediction → action → result — measured improvement after the preventive plan is applied</p>
@@ -1000,7 +1005,8 @@
             <div class="im-metric"><span>CAPACITY IMPROVEMENT</span><b class="text-green" id="im-metric-cap">9 → 21 beds</b></div>
             <div class="im-metric"><span>OCCUPANCY IMPROVEMENT</span><b class="text-green" id="im-metric-occ">91% → 74%</b></div>
         </div>
-    </div>
+        </div>
+    </details>
 
     <div class="glass action-success" id="action-success" style="display:none">
         <div class="as-head">

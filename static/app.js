@@ -7,6 +7,14 @@
 document.addEventListener("DOMContentLoaded", function () {
     initClock();
     initCharts();
+
+    // Mobile app-style screens: collapse secondary blocks so each feature
+    // opens as a focused, scannable screen instead of one long page.
+    if (window.matchMedia && window.matchMedia("(max-width: 767px)").matches) {
+        document.querySelectorAll(".mob-fold").forEach(function (f) {
+            f.removeAttribute("open");
+        });
+    }
 });
 
 /* ==================== CLOCK ==================== */
@@ -34,6 +42,17 @@ function go(view) {
     document.querySelectorAll(".side-item[data-view]").forEach(function (item) {
         item.classList.toggle("active", item.getAttribute("data-view") === view);
     });
+
+    // Show the current screen name in the mobile app header
+    const SCREEN_TITLES = {
+        dashboard: "Dashboard", monitor: "Live Hospital Monitor", twin: "Digital Twin",
+        warning: "Early Warning Center", predict: "AI Crisis Prediction",
+        simulator: "Crisis Simulator", response: "Preventive Action Plan",
+        resource: "Resource Optimizer", support: "Nearby Hospital Support",
+        analytics: "Analytics", command: "Prevention Status"
+    };
+    const mtMain = document.getElementById("mobile-title-main");
+    if (mtMain) mtMain.textContent = SCREEN_TITLES[view] || "Dashboard";
 
     // Return the selected page to a clean start position
     window.scrollTo(0, 0);
