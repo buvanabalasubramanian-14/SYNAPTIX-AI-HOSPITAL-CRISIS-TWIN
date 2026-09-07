@@ -1079,6 +1079,14 @@ body:not(.login-mode) .login-screen { display: none; }
     .login-title { font-size: 22px; letter-spacing: 2px; }
     .login-logo { width: 52px; height: 52px; }
     .login-card { padding: 24px 18px 18px; }
+    .login-input { font-size: 16px; }
+
+    /* Touch polish + remaining grid refits for small screens */
+    @media (min-width: 501px) and (max-width: 767px) {
+        .res-impact-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .mobile-menu-btn { width: 40px; height: 40px; }
+    .side-item, .btn, button { -webkit-tap-highlight-color: transparent; }
 }
 
 /* ==================== COMPACT PHONES (BELOW 600px) ==================== */
