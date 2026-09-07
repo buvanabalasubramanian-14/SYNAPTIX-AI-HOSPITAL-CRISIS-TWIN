@@ -35,6 +35,9 @@ function go(view) {
         item.classList.toggle("active", item.getAttribute("data-view") === view);
     });
 
+    // Return the selected page to a clean start position
+    window.scrollTo(0, 0);
+
     // Close mobile menu
     closeMobileNav();
 
@@ -87,12 +90,14 @@ function toggleMobileNav() {
     const open = !overlay.classList.contains("show");
     overlay.classList.toggle("show");
     document.body.classList.toggle("nav-locked", open);
+    document.documentElement.classList.toggle("nav-locked", open);
 }
 function closeMobileNav() {
     const overlay = document.getElementById("mobile-menu-overlay");
     if (overlay) {
         overlay.classList.remove("show");
         document.body.classList.remove("nav-locked");
+        document.documentElement.classList.remove("nav-locked");
     }
 }
 
