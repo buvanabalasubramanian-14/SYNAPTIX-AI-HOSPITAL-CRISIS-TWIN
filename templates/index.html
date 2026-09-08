@@ -7,14 +7,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=3">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=5">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body class="login-mode">
 
 <!-- ==================== LOGIN / AUTHORIZED ACCESS GATE ==================== -->
 <div class="login-screen" id="login-screen">
-    <div class="login-card">
+    <div class="login-card" id="login-card">
         <div class="login-head">
             <div class="login-logo">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -25,6 +25,7 @@
             <p class="login-caption">Secure Hospital Operations Intelligence Platform</p>
         </div>
         <div class="login-badge">AUTHORIZED HOSPITAL PERSONNEL ONLY</div>
+        <div class="login-success" id="auth-success" style="display:none"></div>
         <form class="login-form" id="login-form" onsubmit="return false;">
             <label class="login-label" for="login-empid">OFFICIAL HOSPITAL ID / EMAIL</label>
             <input class="login-input" type="text" id="login-empid" placeholder="e.g. j.adeyemi@citygeneral.hospital" autocomplete="off" autofocus>
@@ -42,7 +43,67 @@
             <div class="login-error" id="login-error"></div>
             <button class="btn btn-primary btn-lg btn-block" type="button" onclick="loginUser()">SIGN IN</button>
         </form>
+        <div class="new-user">
+            <p class="new-user-label">New to AI Hospital Crisis Twin?</p>
+            <button class="auth-switch" type="button" onclick="showAuthPanel('register')">CREATE ACCOUNT / REGISTER HOSPITAL ACCESS</button>
+        </div>
         <p class="login-foot">Restricted access · Authorized personnel only · Session is monitored</p>
+    </div>
+
+    <div class="login-card register-card" id="register-card" style="display:none">
+        <div class="login-head">
+            <div class="login-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <h1 class="login-title">REGISTER HOSPITAL ACCESS</h1>
+            <p class="login-sub">Create an authorized hospital management account</p>
+            <p class="login-brand">Authorized Management User Enrollment</p>
+            <p class="login-caption">Credentials are verified before dashboard access is granted</p>
+        </div>
+        <div class="login-badge">AUTHORIZED MANAGEMENT USER</div>
+        <form class="login-form register-grid" id="register-form" onsubmit="return false;">
+            <div class="login-field span-2">
+                <label class="login-label" for="reg-hospital-name">HOSPITAL NAME</label>
+                <input class="login-input" type="text" id="reg-hospital-name" placeholder="City General Hospital" autocomplete="off">
+            </div>
+            <div class="login-field">
+                <label class="login-label" for="reg-hospital-id">OFFICIAL HOSPITAL ID</label>
+                <input class="login-input" type="text" id="reg-hospital-id" placeholder="CG-H-001" autocomplete="off">
+            </div>
+            <div class="login-field">
+                <label class="login-label" for="reg-email">OFFICIAL HOSPITAL EMAIL</label>
+                <input class="login-input" type="email" id="reg-email" placeholder="name@citygeneral.hospital" autocomplete="off">
+            </div>
+            <div class="login-field span-2">
+                <label class="login-label" for="reg-full-name">FULL NAME</label>
+                <input class="login-input" type="text" id="reg-full-name" placeholder="Full Name of Authorized User" autocomplete="off">
+            </div>
+            <div class="login-field span-2">
+                <label class="login-label" for="reg-role">MANAGEMENT ROLE</label>
+                <select class="login-input login-select" id="reg-role">
+                    <option value="" disabled selected>Select Management Role...</option>
+                    <option value="Hospital Administrator">Hospital Administrator</option>
+                    <option value="Operations Manager">Operations Manager</option>
+                    <option value="Emergency Department Manager">Emergency Department Manager</option>
+                    <option value="ICU Manager">ICU Manager</option>
+                    <option value="Authorized Hospital Staff">Authorized Hospital Staff</option>
+                </select>
+            </div>
+            <div class="login-field">
+                <label class="login-label" for="reg-password">PASSWORD</label>
+                <input class="login-input" type="password" id="reg-password" placeholder="8+ characters with letters &amp; numbers" autocomplete="off">
+            </div>
+            <div class="login-field">
+                <label class="login-label" for="reg-password2">CONFIRM PASSWORD</label>
+                <input class="login-input" type="password" id="reg-password2" placeholder="Re-enter password" autocomplete="off">
+            </div>
+            <div class="login-error span-2" id="register-error"></div>
+            <div class="span-2">
+                <button class="btn btn-primary btn-lg btn-block" type="button" onclick="registerUser()">CREATE ACCOUNT</button>
+            </div>
+        </form>
+        <p class="login-foot">Registration is restricted to authorized hospital management personnel</p>
+        <button class="auth-switch" type="button" onclick="showAuthPanel('login')">ALREADY HAVE AN ACCOUNT? SIGN IN</button>
     </div>
 </div>
 
@@ -95,25 +156,25 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
             <span>Live Hospital Monitor</span>
         </button>
-        <button class="side-item" data-view="twin" onclick="go('twin')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-            <span>Digital Twin</span>
+        <button class="side-item" data-view="predict" onclick="go('predict')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span>AI Crisis Prediction</span>
+        </button>
+        <button class="side-item" data-view="analytics" onclick="go('analytics')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <span>Analytics</span>
         </button>
         <button class="side-item" data-view="warning" onclick="go('warning')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             <span>Early Warning Center</span>
         </button>
-        <button class="side-item" data-view="predict" onclick="go('predict')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            <span>AI Crisis Prediction</span>
+        <button class="side-item" data-view="response" onclick="go('response')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span>Preventive Action Plan</span>
         </button>
         <button class="side-item" data-view="simulator" onclick="go('simulator')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
             <span>Crisis Simulator</span>
-        </button>
-        <button class="side-item" data-view="response" onclick="go('response')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            <span>Preventive Action Plan</span>
         </button>
         <button class="side-item" data-view="resource" onclick="go('resource')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
@@ -123,9 +184,9 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
             <span>Nearby Hospital Support</span>
         </button>
-        <button class="side-item" data-view="analytics" onclick="go('analytics')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-            <span>Analytics</span>
+        <button class="side-item" data-view="twin" onclick="go('twin')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <span>Digital Twin</span>
         </button>
         <button class="side-item" data-view="command" onclick="go('command')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -261,33 +322,40 @@
         <div class="cf-head">
             <div>
                 <h4 class="panel-title">INTELLIGENCE CYCLE</h4>
-                <p class="cf-sub">Predict → Explain → Warn → Prevent → Simulate → Act → Optimize → Reduce Risk</p>
+                <p class="cf-sub">How SynaptiX transforms live hospital data into preventive action and risk reduction.</p>
             </div>
         </div>
         <div class="core-flow">
-            <div class="cf-step"><span class="cf-num">01</span><span class="cf-name">LIVE HOSPITAL DATA</span></div>
-            <div class="cf-arrow">↓</div>
-            <div class="cf-step"><span class="cf-num">02</span><span class="cf-name">TREND ANALYSIS</span></div>
-            <div class="cf-arrow">↓</div>
-            <div class="cf-step"><span class="cf-num">03</span><span class="cf-name">AI RISK ENGINE</span></div>
-            <div class="cf-arrow">↓</div>
-            <div class="cf-step"><span class="cf-num">04</span><span class="cf-name">CRISIS PREDICTION</span></div>
-            <div class="cf-arrow">↓</div>
-            <div class="cf-step"><span class="cf-num">05</span><span class="cf-name">EXPLAINABLE AI</span><span class="cf-note">Why is this predicted?</span></div>
-            <div class="cf-arrow">↓</div>
-            <div class="cf-step"><span class="cf-num">06</span><span class="cf-name">EARLY WARNING</span></div>
-            <div class="cf-arrow">↓</div>
-            <div class="cf-step"><span class="cf-num">07</span><span class="cf-name">IMPACT ANALYSIS</span></div>
-            <div class="cf-arrow">↓</div>
-            <div class="cf-step"><span class="cf-num">08</span><span class="cf-name">AI PREVENTION PLAN</span></div>
-            <div class="cf-arrow">↓</div>
-            <div class="cf-step cf-sim"><span class="cf-num">09</span><span class="cf-name">CRISIS SIMULATION</span><span class="cf-note">What may happen if no action is taken?</span></div>
-            <div class="cf-arrow">↓</div>
-            <div class="cf-step"><span class="cf-num">10</span><span class="cf-name">HOSPITAL ACTION</span></div>
-            <div class="cf-arrow">↓</div>
-            <div class="cf-step"><span class="cf-num">11</span><span class="cf-name">RESOURCE OPTIMIZATION</span></div>
-            <div class="cf-arrow">↓</div>
-            <div class="cf-step cf-end"><span class="cf-num">12</span><span class="cf-name">RISK REDUCTION</span></div>
+            <div class="cf-row">
+                <div class="cf-step"><span class="cf-num">01</span><span class="cf-name">LIVE HOSPITAL DATA</span></div>
+                <div class="cf-arrow" aria-hidden="true">→</div>
+                <div class="cf-step"><span class="cf-num">02</span><span class="cf-name">TREND ANALYSIS</span></div>
+                <div class="cf-arrow" aria-hidden="true">→</div>
+                <div class="cf-step"><span class="cf-num">03</span><span class="cf-name">AI RISK ENGINE</span></div>
+                <div class="cf-arrow" aria-hidden="true">→</div>
+                <div class="cf-step"><span class="cf-num">04</span><span class="cf-name">CRISIS PREDICTION</span></div>
+                <div class="cf-arrow" aria-hidden="true">→</div>
+                <div class="cf-step"><span class="cf-num">05</span><span class="cf-name">EXPLAINABLE AI</span><span class="cf-note">Why is this predicted?</span></div>
+                <div class="cf-arrow" aria-hidden="true">→</div>
+                <div class="cf-step"><span class="cf-num">06</span><span class="cf-name">EARLY WARNING</span></div>
+            </div>
+            <div class="cf-turn" aria-hidden="true">
+                <span class="cf-turn-line"></span>
+                <span class="cf-turn-arrow">↓</span>
+            </div>
+            <div class="cf-row">
+                <div class="cf-step cf-end"><span class="cf-num">12</span><span class="cf-name">RISK REDUCTION</span></div>
+                <div class="cf-arrow" aria-hidden="true">←</div>
+                <div class="cf-step"><span class="cf-num">11</span><span class="cf-name">RESOURCE OPTIMIZATION</span></div>
+                <div class="cf-arrow" aria-hidden="true">←</div>
+                <div class="cf-step"><span class="cf-num">10</span><span class="cf-name">HOSPITAL ACTION</span></div>
+                <div class="cf-arrow" aria-hidden="true">←</div>
+                <div class="cf-step cf-sim"><span class="cf-num">09</span><span class="cf-name">CRISIS SIMULATION</span><span class="cf-note">What may happen if no action is taken?</span></div>
+                <div class="cf-arrow" aria-hidden="true">←</div>
+                <div class="cf-step"><span class="cf-num">08</span><span class="cf-name">AI PREVENTION PLAN</span></div>
+                <div class="cf-arrow" aria-hidden="true">←</div>
+                <div class="cf-step"><span class="cf-num">07</span><span class="cf-name">IMPACT ANALYSIS</span></div>
+            </div>
         </div>
     </div>
 </details>
@@ -361,6 +429,13 @@
             <div class="twin-bar"><div class="twin-bar-fill fill-moderate" style="width:55%"></div></div>
             <div class="dept-card-meta"><span>11/20</span><span class="text-cyan">MODERATE</span></div>
         </div>
+    </div>
+
+    <div class="dashboard-actions">
+        <button class="btn btn-primary btn-lg" onclick="go('predict')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            VIEW AI CRISIS PREDICTION
+        </button>
     </div>
 
     <!-- Department detail modal -->
@@ -693,6 +768,7 @@
                 <span class="mi-label">RECOMMENDED PREVENTIVE ACTION</span>
                 <p id="pred-reco">Activate backup ICU beds and notify backup medical staff to prevent escalation.</p>
             </div>
+            <button class="btn btn-secondary btn-block" onclick="go('analytics')">VIEW TREND ANALYSIS</button>
             <button class="btn btn-primary btn-block btn-lg" onclick="goToWarning()">VIEW EARLY WARNING →</button>
             <button class="btn btn-secondary btn-block" onclick="go('response')">VIEW PREVENTIVE ACTION PLAN</button>
         </div>
@@ -1043,6 +1119,7 @@
             ACTIVATE SELECTED PREVENTIVE ACTIONS
         </button>
         <span class="act-progress-label" id="resp-overall">0 / 6 ACTIONS ACTIVE</span>
+        <button class="btn btn-outline btn-lg" onclick="go('simulator')">VIEW CRISIS SIMULATOR</button>
     </div>
 </section>
 
@@ -1268,6 +1345,10 @@
         <div class="analytics-card glass"><h4 class="panel-title">CRISIS IMPACT IF NOT PREVENTED</h4><div class="chart-wrap"><canvas id="chart-crisis"></canvas></div></div>
         <div class="analytics-card glass wide"><h4 class="panel-title">BEFORE VS AFTER PREVENTION</h4><div class="chart-wrap"><canvas id="chart-beforeafter"></canvas></div></div>
     </div>
+
+    <div class="dashboard-actions">
+        <button class="btn btn-primary btn-lg" onclick="go('warning')">VIEW EARLY WARNING CENTER</button>
+    </div>
 </section>
 
 <!-- ============ VIEW: PREVENTION STATUS ============ -->
@@ -1348,19 +1429,19 @@
         </div>
         <button class="side-item active" data-view="dashboard" onclick="go('dashboard')">Hospital Crisis Overview</button>
         <button class="side-item" data-view="monitor" onclick="go('monitor')">Live Hospital Monitor</button>
-        <button class="side-item" data-view="twin" onclick="go('twin')">Digital Twin</button>
-        <button class="side-item" data-view="warning" onclick="go('warning')">Early Warning Center</button>
         <button class="side-item" data-view="predict" onclick="go('predict')">AI Crisis Prediction</button>
-        <button class="side-item" data-view="simulator" onclick="go('simulator')">Crisis Simulator</button>
+        <button class="side-item" data-view="analytics" onclick="go('analytics')">Analytics</button>
+        <button class="side-item" data-view="warning" onclick="go('warning')">Early Warning Center</button>
         <button class="side-item" data-view="response" onclick="go('response')">Preventive Action Plan</button>
+        <button class="side-item" data-view="simulator" onclick="go('simulator')">Crisis Simulator</button>
         <button class="side-item" data-view="resource" onclick="go('resource')">Resource Optimizer</button>
         <button class="side-item" data-view="support" onclick="go('support')">Nearby Hospital Support</button>
-        <button class="side-item" data-view="analytics" onclick="go('analytics')">Analytics</button>
+        <button class="side-item" data-view="twin" onclick="go('twin')">Digital Twin</button>
         <button class="side-item" data-view="command" onclick="go('command')">Prevention Status</button>
         <div class="mobile-menu-foot">AI HOSPITAL CRISIS TWIN<br>Developed by Team SynaptiX<br>Authorized Personnel Only</div>
     </nav>
 </div>
 
-<script src="{{ url_for('static', filename='app.js') }}?v=3"></script>
+<script src="{{ url_for('static', filename='app.js') }}?v=5"></script>
 </body>
 </html>

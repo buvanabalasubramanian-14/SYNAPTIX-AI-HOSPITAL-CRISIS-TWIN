@@ -1730,12 +1730,31 @@ function initCharts() {
 /* helper: use latest department data for viewDetails */
 function d() { return deptData[currentDept] || deptData["ICU"]; }
 
-/* ==================== AUTHORIZED ACCESS GATE (ROLE-BASED LOGIN) ==================== */
+/* ==================== AUTHORIZED ACCESS GATE (ROLE-BASED LOGIN + REGISTRATION) ==================== */
 let sessionUser = null;
 
 function showLoginError(msg) {
     const el = document.getElementById("login-error");
     if (el) el.textContent = msg || "";
+}
+
+function hashPass(p) {
+    let h = 5381;
+    for (let i = 0; i < p.length; i++) h = ((h << 5) + h + p.charCodeAt(i)) | 0;
+    return "h" + (h >>> 0).toString(16);
+}
+
+function loadRegisteredUsers() {
+    try {
+        const raw = localStorage.getItem("crisisTwinUsers");
+        const parsed = raw ? JSON.parse(raw) : {};
+        return parsed && typeof parsed === "object" ? parsed : {};
+    } catch (e) { return {}; }
+}
+
+function persistRegisteredUsers(users) {
+    try { localStorage.setItem("crisisTwinUsers", JSON.stringify(users)); return true; }
+    catch (e) { return false; }
 }
 
 function loginUser() {
@@ -1747,18 +1766,99 @@ function loginUser() {
         showLoginError(deniedMsg);
         return;
     }
-    if (empid !== "admin@citygeneralhospital.com" || pass !== "SynaptiX@2026" || role !== "Hospital Administrator") {
+
+    let user = null;
+    if (empid.toLowerCase() === "admin@citygeneralhospital.com") {
+        if (pass === "SynaptiX@2026" && role === "Hospital Administrator") {
+            user = { email: empid, role: role, name: "System Administrator" };
+        }
+    } else {
+        const users = loadRegisteredUsers();
+        const em = empid.toLowerCase();
+        if (users[em]) user = users[em];
+        if (!user) {
+            const hid = empid.toUpperCase();
+            Object.keys(users).forEach(function (k) {
+                if (!user && users[k].hid === hid) user = users[k];
+            });
+        }
+        if (user && (hashPass(pass) !== user.pwdHash || role !== user.role)) user = null;
+    }
+
+    if (!user) {
         showLoginError(deniedMsg);
         return;
     }
     showLoginError("");
-    sessionUser = { empid: empid, role: role };
+    sessionUser = { email: user.email || empid, role: user.role, name: user.name || "", hospital: user.hospital || "" };
     document.body.classList.remove("login-mode");
     document.getElementById("user-role").textContent = role;
-    document.getElementById("user-id").textContent = "Authorized User · " + empid;
+    document.getElementById("user-id").textContent = "Authorized User · " + (user.name ? user.name + " · " + (user.email || empid) : (user.email || empid));
     document.getElementById("user-chip").style.display = "flex";
     go("dashboard");
     toast("Access Granted — Authorized Hospital Personnel Verified", "success");
+}
+
+function registerUser() {
+    const err = document.getElementById("register-error");
+    const fail = function (m) { if (err) err.textContent = m; else alert(m); return; };
+
+    const hospital = (document.getElementById("reg-hospital-name").value || "").trim();
+    const hid = (document.getElementById("reg-hospital-id").value || "").trim().toUpperCase();
+    const email = (document.getElementById("reg-email").value || "").trim().toLowerCase();
+    const name = (document.getElementById("reg-full-name").value || "").trim();
+    const role = document.getElementById("reg-role").value || "";
+    const pass = document.getElementById("reg-password").value || "";
+    const pass2 = document.getElementById("reg-password2").value || "";
+    const roles = ["Hospital Administrator", "Operations Manager", "Emergency Department Manager", "ICU Manager", "Authorized Hospital Staff"];
+
+    if (!hospital || !hid || !email || !name || !role || !pass) return fail("Complete all fields to register hospital access.");
+    if (!/^[A-Za-z][A-Za-z0-9._+\- ]{2,60}$/.test(hospital)) return fail("Enter a valid hospital name.");
+    if (!/^[A-Z0-9][A-Z0-9\-_]{2,19}$/.test(hid)) return fail("Enter a valid Official Hospital ID (3–20 letters/numbers).");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return fail("Enter a valid official hospital email address.");
+    if (email === "admin@citygeneralhospital.com") return fail("This email is reserved for the system administrator.");
+    if (name.split(/\s+/).length < 2) return fail("Enter your full name (first and last name).");
+    if (roles.indexOf(role) === -1) return fail("Select a valid management role.");
+    if (pass.length < 8 || !/[A-Za-z]/.test(pass) || !/[0-9]/.test(pass)) return fail("Password must be at least 8 characters and include both letters and numbers.");
+    if (pass !== pass2) return fail("Passwords do not match. Re-enter your password.");
+
+    const users = loadRegisteredUsers();
+    if (users[email]) return fail("An account for this hospital email is already registered.");
+    let dup = false;
+    Object.keys(users).forEach(function (k) { if (users[k].hid === hid) dup = true; });
+    if (dup) return fail("An account for this Official Hospital ID is already registered. Contact the system administrator.");
+
+    users[email] = {
+        hospital: hospital, hid: hid, email: email, name: name, role: role,
+        pwdHash: hashPass(pass), created: new Date().toISOString()
+    };
+    if (!persistRegisteredUsers(users)) return fail("Unable to save the account in this browser. Storage is required.");
+
+    ["reg-hospital-name", "reg-hospital-id", "reg-email", "reg-full-name", "reg-password", "reg-password2"].forEach(function (id) {
+        const el = document.getElementById(id); if (el) el.value = "";
+    });
+    const rsel = document.getElementById("reg-role"); if (rsel) rsel.value = "";
+    if (err) err.textContent = "";
+    showAuthPanel("login");
+    const ok = document.getElementById("auth-success");
+    if (ok) {
+        ok.style.display = "block";
+        ok.textContent = "Account created successfully — Authorized Hospital Access granted for " + name + " (" + email + "). Sign in with your registered credentials.";
+    }
+    const le = document.getElementById("login-empid"); if (le) le.value = email;
+    toast("Account created successfully", "success");
+}
+
+function showAuthPanel(panel) {
+    const login = document.getElementById("login-card");
+    const reg = document.getElementById("register-card");
+    if (panel === "register") {
+        if (login) login.style.display = "none";
+        if (reg) reg.style.display = "block";
+    } else {
+        if (reg) reg.style.display = "none";
+        if (login) login.style.display = "block";
+    }
 }
 
 function logoutUser() {
@@ -1767,7 +1867,9 @@ function logoutUser() {
     if (document.getElementById("login-password")) document.getElementById("login-password").value = "";
     if (document.getElementById("login-role")) document.getElementById("login-role").value = "";
     showLoginError("");
+    const ok = document.getElementById("auth-success"); if (ok) ok.style.display = "none";
     if (document.getElementById("user-chip")) document.getElementById("user-chip").style.display = "none";
+    showAuthPanel("login");
     document.body.classList.add("login-mode");
     toast("Signed out. Returning to authorized access.", "info");
 }
@@ -1778,6 +1880,13 @@ function logoutUser() {
         const el = document.getElementById(id);
         if (el) el.addEventListener("keydown", function (e) {
             if (e.key === "Enter") loginUser();
+        });
+    });
+    const regGates = ["reg-hospital-name", "reg-hospital-id", "reg-email", "reg-full-name", "reg-password", "reg-password2"];
+    regGates.forEach(function (id) {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") registerUser();
         });
     });
 })();

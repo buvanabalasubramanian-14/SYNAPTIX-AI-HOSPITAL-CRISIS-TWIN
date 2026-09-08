@@ -677,16 +677,38 @@ body {
 /* ==================== ENHANCEMENTS: CORE AI WORKFLOW ==================== */
 .core-flow-card { margin-bottom: 26px; }
 .cf-head { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; }
-.cf-sub { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
-.core-flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; }
-.cf-step { position: relative; flex: 1 1 150px; background: rgba(10,18,40,0.7); border: 1px solid var(--border); border-radius: 12px; padding: 20px 14px; display: flex; flex-direction: column; gap: 8px; transition: all 0.3s ease; }
+.cf-sub { font-size: 12px; color: var(--text-secondary); margin-top: 6px; line-height: 1.55; max-width: 760px; }
+.core-flow { display: flex; flex-direction: column; gap: 0; }
+.cf-row { display: flex; align-items: stretch; }
+.cf-row .cf-step { flex: 1 1 0; min-width: 0; }
+.cf-step { position: relative; background: rgba(10,18,40,0.7); border: 1px solid var(--border); border-radius: 12px; padding: 20px 14px; display: flex; flex-direction: column; gap: 8px; transition: all 0.3s ease; }
 .cf-step:hover { border-color: var(--border-strong); transform: translateY(-3px); box-shadow: var(--shadow); }
 .cf-num { font-size: 11px; font-weight: 800; color: var(--purple-soft); letter-spacing: 1.5px; }
 .cf-name { font-size: 12px; font-weight: 700; letter-spacing: 1px; color: var(--text-primary); line-height: 1.4; }
 .cf-note { font-size: 10.5px; color: var(--text-secondary); font-weight: 500; }
-.cf-arrow { display: flex; align-items: center; color: var(--cyan); font-weight: 700; font-size: 15px; }
+.cf-arrow { display: flex; align-items: center; justify-content: center; flex: 0 0 28px; width: 28px; color: var(--cyan); font-weight: 700; font-size: 15px; }
+.cf-turn { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px 0; }
+.cf-turn-line { width: 2px; height: 14px; background: linear-gradient(to bottom, var(--cyan), rgba(34,211,238,0.3)); border-radius: 2px; }
+.cf-turn-arrow { color: var(--cyan); font-size: 15px; font-weight: 700; line-height: 1; margin-top: 2px; }
 .cf-sim { border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.05); }
 .cf-end { border-color: var(--cyan); background: rgba(34,211,238,0.07); box-shadow: var(--glow-cyan, 0 0 18px rgba(34,211,238,0.12)); }
+@media (min-width: 768px) and (max-width: 1099px) {
+    .cf-row .cf-step { padding: 14px 10px; }
+    .cf-arrow { flex-basis: 20px; width: 20px; font-size: 13px; }
+    .cf-name { font-size: 11px; letter-spacing: 0.5px; }
+}
+@media (max-width: 767px) {
+    .cf-row { flex-direction: column; align-items: stretch; }
+    .cf-row .cf-step { flex: none; padding: 14px 14px; }
+    .cf-arrow {
+        color: transparent; width: 2px; height: 18px; flex: 0 0 auto;
+        background: linear-gradient(to bottom, var(--cyan), rgba(34,211,238,0.35));
+        border-radius: 2px; align-self: center; margin: 2px 0;
+    }
+    .cf-turn { padding: 0; }
+    .cf-turn-line { height: 10px; }
+    .cf-turn-arrow { font-size: 14px; }
+}
 
 /* ==================== ENHANCEMENTS: EXPLAINABLE AI + LOGIC ==================== */
 .predict-logic-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 22px; }
@@ -981,6 +1003,35 @@ body:not(.login-mode) .login-screen { display: none; }
 }
 .login-form .btn { margin-top: 10px; }
 .login-foot { margin-top: 18px; font-size: 10.5px; color: var(--text-muted); letter-spacing: 0.5px; }
+
+/* ==================== REGISTER HOSPITAL ACCESS ==================== */
+.new-user { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
+.new-user-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--text-muted); text-align: center; margin-bottom: 10px; text-transform: uppercase; }
+.auth-switch {
+    display: block; width: 100%;
+    background: rgba(34, 211, 238, 0.06);
+    border: 1px solid rgba(34, 211, 238, 0.35);
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor: pointer; font-family: var(--font);
+    font-size: 10.5px; font-weight: 800; letter-spacing: 1.4px;
+    color: var(--cyan-bright); text-align: center; -webkit-tap-highlight-color: transparent;
+    transition: all 0.25s ease;
+}
+.auth-switch:hover { background: rgba(34, 211, 238, 0.12); border-color: var(--cyan); color: #fff; }
+.login-success {
+    display: none; margin: 18px 0 0; padding: 11px 12px; border-radius: 10px;
+    background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.35);
+    color: var(--green-soft); font-size: 12px; line-height: 1.55; text-align: center;
+}
+.register-card .login-title { font-size: 20px; letter-spacing: 2px; }
+.login-field { display: flex; flex-direction: column; min-width: 0; }
+.login-field .login-label { margin: 16px 0 6px; }
+@media (min-width: 560px) {
+    .register-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 14px; }
+    .register-grid .span-2 { grid-column: 1 / -1; }
+    .register-grid .login-field .login-label { margin-top: 14px; }
+}
 
 /* Signed-in identity chip (existing topbar, small + professional) */
 .user-chip {
